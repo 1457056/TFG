@@ -1,0 +1,8 @@
+{% extends "/Base/webpage.html" %}
+{%block input%}
+    <div class="form mt-5">
+       <a href="{{ url_for('input_type_tw')}}"> <button type="submit" onclick="location.href()" class="btn btn-primary btn-lg"> Twitter</button></a>
+        <a href="{{ url_for('input_type_fb')}}"><button type="submit"  class="btn btn-primary btn-lg">Facebook</button></a>
+    </div>
+
+{% endblock %}z
