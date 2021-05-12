@@ -74,17 +74,20 @@ def predict():
         # For rendering results on HTML GUI
         input_text = request.form['word']
         input_number = 20 #Tweets a descargar por defecto
+        input_date_start = ''
+        input_date_end = ''
 
-        if 'number' in request.form:
+        if 'number'in request.form:
             input_number = int(request.form['number'])
+            input_date_start = request.form['start']
+            input_date_end = request.form['end']
 
 
         if 'twitter' in request.form:
             from Twitter import test_tweets as tt
 
 
-            input_date_start = request.form['start']
-            input_date_end = request.form['end']
+
 
             prediction, tweets = tt.main(input_text, input_number,input_date_start,input_date_end)
             encoded_img_data = wordcloud(tweets)
