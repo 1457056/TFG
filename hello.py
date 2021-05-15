@@ -35,9 +35,9 @@ def wordcloud_texts(texts):
     all_headlines = ' '.join(texts['Tweet'].str.lower())
 
     wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000).generate(all_headlines)
-    wordcloud.to_file('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/wordcloud.jpg')
+    wordcloud.to_file(r'C:\Users\Usuario\Desktop\TFG\static\images\wordcloud.jpg')
 
-    im = Image.open('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/wordcloud.jpg')
+    im = Image.open(r'C:\Users\Usuario\Desktop\TFG\static\images\wordcloud.jpg')
     data = io.BytesIO()
     im.save(data, "JPEG")
 
@@ -54,9 +54,9 @@ def circular_graphic(tweets):
     """
     tweets['Label'].value_counts().plot(kind='pie', autopct='%.2f%%', title='Posts')
 
-    plt.savefig('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/circular_graph.jpg')
+    plt.savefig(r'C:\Users\Usuario\Desktop\TFG\static\images\circular_graph.jpg')
 
-    im = Image.open('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/circular_graph.jpg')
+    im = Image.open(r'C:\Users\Usuario\Desktop\TFG\static\images\circular_graph.jpg')
     data = io.BytesIO()
     im.save(data, "JPEG")
 
@@ -71,9 +71,9 @@ def excel(dframe,type):
     @param type:
     """
     if type == 'twitter':
-        dframe.to_excel('/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.xlsx')
+        dframe.to_excel(r'C:\Users\Usuario\Desktop\TFG\Twitter\df_tw.xlsx')
     else:
-        dframe.to_excel('/home/gerard/Escritorio/TFG_deb/Webpage/Facebook/df_fb.xlsx')
+        dframe.to_excel(r'C:\Users\Usuario\Desktop\TFG\Facebook\df_fb.xlsx')
 # default page of our web-app
 @app.route('/')
 def home():
@@ -153,5 +153,5 @@ def predict():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    app.run(debug=True)
 

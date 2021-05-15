@@ -1,13 +1,13 @@
 import json
 import time
 
-from Webpage import test_texts as tp
+import test_texts as tp
 import pickle
 import tweepy as tw
 import pandas as pd
-from Webpage import process_texts as pt
+import process_texts as pt
 import matplotlib.pyplot as plt
-from Webpage import prepare_out_texts as pot
+import prepare_out_texts as pot
 from PIL import Image
 import io
 from os import remove
@@ -88,9 +88,9 @@ def df_to_json(df_tweets):
     :param df_tweets: Df resultante de la predicción
     """
 
-    df_tweets.to_json('/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.json', orient='split')
+    df_tweets.to_json(r'C:\Users\Usuario\Desktop\TFG\Twitter\df_tw.json', orient='split')
 
-    with open(r'/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.json') as f:
+    with open(r'C:\Users\Usuario\Desktop\TFG\Twitter\df_tw.json') as f:
         result = json.load(f)
 
     return result

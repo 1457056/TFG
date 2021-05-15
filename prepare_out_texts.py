@@ -3,9 +3,9 @@ import test_texts as tp
 import process_texts as pt
 
 # Load the variables of the training
-with open('/home/gerard/Escritorio/TFG_deb/Webpage/Training results/logprior.pkl', 'rb') as f:
+with open('Training results/logprior.pkl', 'rb') as f:
     logprior = pickle.load(f)
-with open('/home/gerard/Escritorio/TFG_deb/Webpage/Training results/loglikelihood.pkl', 'rb') as f:
+with open('Training results/loglikelihood.pkl', 'rb') as f:
     loglikelihood = pickle.load(f)
 
 def build_result_df(testDataSet, data_classified):
