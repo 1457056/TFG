@@ -3,9 +3,9 @@ import test_texts as tp
 import process_texts as pt
 
 # Load the variables of the training
-with open('../Training results/logprior.pkl', 'rb') as f:
+with open('/home/gerard/Escritorio/TFG_deb/Webpage/Training results/logprior.pkl', 'rb') as f:
     logprior = pickle.load(f)
-with open('../Training results/loglikelihood.pkl', 'rb') as f:
+with open('/home/gerard/Escritorio/TFG_deb/Webpage/Training results/loglikelihood.pkl', 'rb') as f:
     loglikelihood = pickle.load(f)
 
 def build_result_df(testDataSet, data_classified):
@@ -14,12 +14,14 @@ def build_result_df(testDataSet, data_classified):
     :param data_classified:
     :return: data_classified
     """
+
     for tweet in testDataSet:
         p = tp.naive_bayes_predict(tweet['text'], logprior, loglikelihood)
         print(f'{tweet["text"]} -> {p:.2f}')
 
         data_classified = data_classified.append({
             'Tweet': pt.remove_usernames(tweet['text']),
+            'Likes': int(tweet['likes']),
             'Label': label(p),
             'Rate': p
         }, ignore_index=True)

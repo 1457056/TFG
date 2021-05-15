@@ -15,8 +15,8 @@ def naive_bayes_predict(tweet, logprior, loglikelihood):
     '''
 
     # process the tweet to get a list of words
-    new_tweet = pt.translate_new_tweets(tweet)
-    word_l = pt.process_tweet(new_tweet)
+    #new_tweet = pt.translate_new_tweets(tweet)
+    word_l = pt.process_tweet(tweet)
 
     # initialize probability to zero
     p = 0

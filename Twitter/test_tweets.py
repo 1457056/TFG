@@ -1,16 +1,17 @@
 import json
-import test_texts as tp
+import time
+
+from Webpage import test_texts as tp
 import pickle
 import tweepy as tw
 import pandas as pd
-import process_texts as pt
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+from Webpage import process_texts as pt
 import matplotlib.pyplot as plt
-from pymongo import MongoClient
-import prepare_out_texts as pot
-from bson.codec_options import CodecOptions
-
-client = MongoClient('localhost')
+from Webpage import prepare_out_texts as pot
+from PIL import Image
+import io
+from os import remove
+import base64
 
 # initialize api instance
 # Defining keys to access the Twitter API
@@ -34,6 +35,7 @@ def getApi():
 # Run this cell to test your function
 def buildTestSet(search_keyword, num, start_date, end_date):
     test_data = []
+    API_LIMIT = 900
     """
     Método que utiliza la API de Twitter para descargar un conjunto de tweets a analizar
     :param search_keyword: Usuario, palabra o #
@@ -41,16 +43,35 @@ def buildTestSet(search_keyword, num, start_date, end_date):
     """
     try:
         api = getApi()
+        new_num = num
+        next = True
+        rest = num
+        count = 0
 
-        if '@' in search_keyword:
-            tweets_fetched = api.user_timeline(screen_name=search_keyword, since=start_date,
-                                               until=end_date, count=num)
-            return [{"text": status.text, "label": None} for status in tweets_fetched]
-        else:
-            tweets_fetched = tw.Cursor(api.search, search_keyword, since=start_date,
-                                       until=end_date).items(num)
-            return [{"text": status.text, "label": None} for status in tweets_fetched]
+        while next:
+            if num > 900:
+                new_num = API_LIMIT
+            count = new_num + count
+            if '@' in search_keyword:
+                tweets_fetched = api.user_timeline(screen_name=search_keyword, since=start_date,
+                                                   until=end_date, count=new_num)
+                test_data.append([{"text": status.text, "label": None, 'likes': status.favorite_count} for status in
+                                  tweets_fetched])
+            else:
+                tweets_fetched = tw.Cursor(api.search, search_keyword, since=start_date,
+                                           until=end_date).items(new_num)
+                for status in tweets_fetched:
+                    test_data.append({"text": status.text, "label": None, 'likes': status.favorite_count})
+                    start_date = status.created_at
+                    start_date = start_date.strftime('%Y-%m-%d')
 
+            new_num = rest - new_num
+            rest = new_num
+            if rest == 0:
+                next = False
+            elif count == API_LIMIT:
+                time.sleep(900)
+        return test_data
     except:
         print("Unfortunately, something went wrong..")
         return None
@@ -58,7 +79,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
 
 # ------------------------------------------------------------------------
 
-data_classified = pd.DataFrame(columns=['Tweet', 'Label', 'Rate'])
+data_classified = pd.DataFrame(columns=['Tweet', 'Likes', 'Label', 'Rate'])
 
 
 def df_to_json(df_tweets):
@@ -66,21 +87,19 @@ def df_to_json(df_tweets):
     Transforma el df en un excel y en un json para subirlo a mongo
     :param df_tweets: Df resultante de la predicción
     """
-    df_tweets.to_excel(r'C:\Users\Usuario\Desktop\TFG_last\Twitter\df_tw.xlsx')
-    df_tweets.to_json(r'C:\Users\Usuario\Desktop\TFG_last\Twitter\df_tw.json', orient='split')
 
-    with open(r'C:\Users\Usuario\Desktop\TFG_last\Twitter\df_tw.json') as f:
+    df_tweets.to_json('/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.json', orient='split')
+
+    with open(r'/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.json') as f:
         result = json.load(f)
 
-    db = client['Result_dfs']
-    col = db['dfs_twitter']
-    col.insert_one(result)
     return result
 
 
 def main(search_term, num, start, end):
     testDataSet = buildTestSet(search_term, num, start, end)
     result_df = pot.build_result_df(testDataSet, data_classified)
+
     max_tweets = pot.top_texts(result_df)
     result_json = df_to_json(max_tweets)
     return (result_json, result_df)
