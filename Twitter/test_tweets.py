@@ -1,13 +1,13 @@
 import json
 import time
 
-import test_texts as tp
+from Webpage import test_texts as tp
 import pickle
 import tweepy as tw
 import pandas as pd
-import process_texts as pt
+from Webpage import process_texts as pt
 import matplotlib.pyplot as plt
-import prepare_out_texts as pot
+from Webpage import prepare_out_texts as pot
 from PIL import Image
 import io
 from os import remove
@@ -47,10 +47,13 @@ def buildTestSet(search_keyword, num, start_date, end_date):
         next = True
         rest = num
         count = 0
+        since_id=''
 
         while next:
-            if num > 900:
+            if new_num > 900:
                 new_num = API_LIMIT
+            else:
+                new_num=rest
             count = new_num + count
             if '@' in search_keyword:
                 tweets_fetched = api.user_timeline(screen_name=search_keyword, since=start_date,
@@ -59,11 +62,11 @@ def buildTestSet(search_keyword, num, start_date, end_date):
                                   tweets_fetched])
             else:
                 tweets_fetched = tw.Cursor(api.search, search_keyword, since=start_date,
-                                           until=end_date).items(new_num)
+                                           until=end_date,since_id=since_id).items(new_num)
                 for status in tweets_fetched:
                     test_data.append({"text": status.text, "label": None, 'likes': status.favorite_count})
-                    start_date = status.created_at
-                    start_date = start_date.strftime('%Y-%m-%d')
+                    since_id = status.id
+
 
             new_num = rest - new_num
             rest = new_num
@@ -88,9 +91,9 @@ def df_to_json(df_tweets):
     :param df_tweets: Df resultante de la predicción
     """
 
-    df_tweets.to_json(r'C:\Users\Usuario\Desktop\TFG\Twitter\df_tw.json', orient='split')
+    df_tweets.to_json('/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.json', orient='split')
 
-    with open(r'C:\Users\Usuario\Desktop\TFG\Twitter\df_tw.json') as f:
+    with open(r'/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.json') as f:
         result = json.load(f)
 
     return result

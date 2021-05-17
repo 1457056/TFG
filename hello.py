@@ -3,7 +3,7 @@ import base64
 import os
 import numpy as np
 from PIL import Image
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory, current_app, send_file
 import flask
 import pickle
 import itertools
@@ -35,9 +35,9 @@ def wordcloud_texts(texts):
     all_headlines = ' '.join(texts['Tweet'].str.lower())
 
     wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000).generate(all_headlines)
-    wordcloud.to_file(r'C:\Users\Usuario\Desktop\TFG\static\images\wordcloud.jpg')
+    wordcloud.to_file('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/wordcloud.jpg')
 
-    im = Image.open(r'C:\Users\Usuario\Desktop\TFG\static\images\wordcloud.jpg')
+    im = Image.open('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/wordcloud.jpg')
     data = io.BytesIO()
     im.save(data, "JPEG")
 
@@ -54,9 +54,9 @@ def circular_graphic(tweets):
     """
     tweets['Label'].value_counts().plot(kind='pie', autopct='%.2f%%', title='Posts')
 
-    plt.savefig(r'C:\Users\Usuario\Desktop\TFG\static\images\circular_graph.jpg')
+    plt.savefig('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/circular_graph.jpg')
 
-    im = Image.open(r'C:\Users\Usuario\Desktop\TFG\static\images\circular_graph.jpg')
+    im = Image.open('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/circular_graph.jpg')
     data = io.BytesIO()
     im.save(data, "JPEG")
 
@@ -64,16 +64,19 @@ def circular_graphic(tweets):
     encoded_img_data_circular_graph = base64.b64encode(data.getvalue())
     return encoded_img_data_circular_graph
 
-def excel(dframe,type):
+
+def excel(dframe, type):
     """
     Metodo que crea un excel con el análisis para descargarlo posteriormente
     @param dframe:
     @param type:
     """
     if type == 'twitter':
-        dframe.to_excel(r'C:\Users\Usuario\Desktop\TFG\Twitter\df_tw.xlsx')
+        dframe.to_excel('/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.xlsx')
     else:
-        dframe.to_excel(r'C:\Users\Usuario\Desktop\TFG\Facebook\df_fb.xlsx')
+        dframe.to_excel('/home/gerard/Escritorio/TFG_deb/Webpage/Facebook/df_fb.xlsx')
+
+
 # default page of our web-app
 @app.route('/')
 def home():
@@ -131,7 +134,7 @@ def predict():
                 input_date_end = request.form['end']
 
             prediction, texts = tt.main(input_text, input_number, input_date_start, input_date_end)
-            excel(texts,'twitter')
+            excel(texts, 'twitter')
             wordcloudpic = wordcloud_texts(texts)
             graphic = circular_graphic(texts)
 
@@ -152,6 +155,15 @@ def predict():
                            wordcloud=wordcloudpic.decode('utf-8'), graphic=graphic.decode('utf-8'))
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.route('/download')
+def download_file():
+    """
+    Método para descargar excel con análisis
+    @return:
+    """
+    path = "/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.xlsx"
+    return send_file(path, as_attachment=True)
 
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', debug=True)
