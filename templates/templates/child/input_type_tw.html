@@ -1,0 +1,10 @@
+{% extends "/base/webpage.html" %}
+{%block input_rrss%}
+<div class="form mt-5">
+    <form method="post" action="{{ url_for('form')}}">
+        <button type="submit" name="twitter" value="0" class="btn btn-primary btn-lg">Palabra</button>
+        <button type="submit" name="twitter" value="1" class="btn btn-primary btn-lg">Usuario</button>
+    </form>
+</div>
+
+{% endblock %}
