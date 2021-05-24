@@ -21,9 +21,9 @@ def build_result_df(testDataSet, data_classified):
 
         data_classified = data_classified.append({
             'Tweet': pt.remove_usernames(tweet['text']),
-            'Likes': int(tweet['likes']),
             'Label': label(p),
-            'Rate': p
+            'Rate': p,
+            'Id': (tweet['id'])
         }, ignore_index=True)
     return data_classified
 

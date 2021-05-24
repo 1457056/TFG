@@ -2,6 +2,7 @@ isOn = true
 isOn2 = true
 document.addEventListener("DOMContentLoaded", () => {
     // Escuchamos el click del botón
+// Escuchamos el click del botón
     $('#download').on("click", () => {
         const $elementoParaConvertir = document.body; // <-- Aquí puedes elegir cualquier elemento del DOM
         html2pdf()
@@ -27,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(err => console.log(err));
     });
     $('#flexCheckDefault').on("click", () => {
-	
+
         if (isOn === true) {
 
             $('#dates').html('<div className="row_date mt-1"><input type="text" name="number" placeholder="Numero de posts" required' +
@@ -39,22 +40,19 @@ document.addEventListener("DOMContentLoaded", () => {
             isOn = true;
         }
     });
-    
+
     $('#flexCheckDefault2').on("click", () => {
-	
+
         if (isOn2 === true) {
 
-            $('#data').html('<input type="text" name="number" placeholder="Numero de posts" required oninvalid= ' + '"this.setCustomValidity'+ "('Ingresa un número de posts a analizar')" + '"'+ ' pattern="{1,25})"> '
-               );
+            $('#data').html('<input type="text" name="number" placeholder="Numero de posts" required oninvalid= ' + '"this.setCustomValidity' + "('Ingresa un número de posts a analizar')" + '"' + ' pattern="{1,25})"> '
+            );
             isOn2 = false;
         } else {
             $('#data').html('');
             isOn2 = true;
         }
     });
-    
-    
-    
-});
 
-//pattern="(?:[0-9]{1,2}|100)$"
+
+});

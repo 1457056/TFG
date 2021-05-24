@@ -57,14 +57,16 @@ def buildTestSet(search_keyword, num, start_date, end_date):
             count = new_num + count
             if '@' in search_keyword:
                 tweets_fetched = api.user_timeline(screen_name=search_keyword, since=start_date,
-                                                   until=end_date, count=new_num)
+                                                   until=end_date,count=new_num,include_rts=False)
                 for status in tweets_fetched:
-                    test_data.append({"text": status.text, "label": None, 'likes': status.favorite_count})
+                    test_data.append({"text": status.text, "label": None,'id':status.id})
+                    since_id = status.id
             else:
-                tweets_fetched = tw.Cursor(api.search, search_keyword, since=start_date,
-                                           until=end_date,since_id=since_id).items(new_num)
+                tweets_fetched = tw.Cursor(api.search, search_keyword+'-filter:retweets', since=start_date,
+                                           until=end_date,since_id=since_id, include_rts=False).items(new_num)
                 for status in tweets_fetched:
-                    test_data.append({"text": status.text, "label": None, 'likes': status.favorite_count})
+                    print(status)
+                    test_data.append({"text": status.text, "label": None,'id':status.id})
                     since_id = status.id
 
 
@@ -82,7 +84,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
 
 # ------------------------------------------------------------------------
 
-data_classified = pd.DataFrame(columns=['Tweet', 'Likes', 'Label', 'Rate'])
+data_classified = pd.DataFrame(columns=['Tweet', 'Label', 'Rate','Id'])
 
 
 def df_to_json(df_tweets):

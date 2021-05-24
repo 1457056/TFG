@@ -7,6 +7,7 @@ body {
     min-height: 100%;
     font-family: -webkit-pictograph;
     line-height: 30px;
+
 }
 
 .header {
@@ -22,7 +23,7 @@ body {
     text-align: center;
 }
 
-.header a {
+.header h1 a {
     color: black;
     text-decoration: transparent;
 }
@@ -50,6 +51,7 @@ body {
 .feature-title {
     font-weight: 600;
     margin-bottom: .53571em;
+    width: 75%;
 
 }
 
@@ -120,12 +122,141 @@ th, td {
     font-size: 18px !important;
 }
 
-.predict{
-	align-items:center!important;
+.predict {
+    align-items: center !important;
 }
 
-.download-excel{
+.download-excel {
     text-align: right;
 }
 
+.wordc {
+    width: 75% !important;
+}
 
+.wordcloud {
+    text-align: center;
+}
+
+.card-body p {
+    text-align: center;
+}
+
+.card-body-text {
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: .25rem;
+}
+
+
+
+
+
+/*--------------------------------------------FOOTER--------------------------------------------*/
+.footer {
+    margin: auto;
+    text-align: center;
+    font-size: 13px;
+    clear: both;
+    width: 100%;
+    padding: 10px 0;
+    background-color: #eee;
+    border-top: 1px solid #ddd;
+}
+
+.wrapper {
+    width: 1000px;
+    min-height: 55px;
+    margin: auto;
+    height: auto;
+    overflow: auto;
+}
+
+.footer-block-1, .footer-block-2 {
+    width: 333px;
+    height: auto;
+    overflow: hidden;
+    float: left;
+    text-align: left;
+    padding: 10px 0;
+}
+
+.footer-item {
+    width: 50%;
+    height: 20px;
+    float: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.footer-item a {
+    color: #43464b;
+}
+
+.footer-tit {
+    width: 100%;
+    font-size: 16px;
+    padding: 5px 0;
+    color: #43464b;
+    font-weight: 600;
+}
+
+.ficon-wrapper {
+    width: 200px;
+    height: 35px;
+    margin: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    text-align: left;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    margin-left: 400px;
+    float: left;
+    clear: both;
+}
+
+.aicon, .bicon {
+    width: 35px;
+    height: 35px;
+    float: left;
+    clear: none;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    background-clip: padding-box;
+    background-color: #363636;
+    opacity: 0.25;
+    text-align: center;
+}
+
+.bicon {
+    margin-left: 5px;
+}
+
+.aicon .fa, .bicon .fa {
+    color: #eee;
+    font-size: 18px;
+    line-height: 35px;
+}
+
+a:link, a:visited, a:active {
+    text-decoration: none;
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+.dropdown-item {
+    color: black !important;
+}
+
+.btn-secondary{
+    margin-bottom: 50px;
+}

@@ -56,7 +56,7 @@
     </div>
 </nav>
 
-<div class="predict container ">
+<div class="predict container mb-5">
 
     <div class="header mt-5">
         <h1>Resultados</h1>
@@ -75,12 +75,12 @@
                                 allowfullscreen="true"
                                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
                     </center>
-
-                    <div class="card-body">
+                    <div class="card-body-text">
                         <p class="card-text">Label: {{item[1]}}</p>
                         <p class="card-text">Rate: {{item[2]}}</p>
                     </div>
                 </div>
+
             </div>
             {% endfor %}
         </div>
@@ -114,7 +114,7 @@
                         class="fa fa-download"></i>
                     Descargar
                 </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                <div class="dropdown-menu mb-5" aria-labelledby="dropdownMenu2">
                     <button id="download" class="dropdown-item"> Descargar PDF
                     </button>
                     <a href="{{ url_for('.download_file') }}">
@@ -130,5 +130,36 @@
 </div>
 </div>
 
+
+<footer class="footer">
+    <div class="wrapper">
+        <div class="footer-block-1">
+            <div class="footer-tit">Herramientas y Recursos</div>
+            <div class="footer-item"><a href="https://developer.twitter.com/en/docs/twitter-api" title="API Twitter">API
+                Twitter</a></div>
+            <div class="footer-item"><a href="https://developers.facebook.com/docs/graph-api?locale=es_ES"
+                                        title="API Facebook">API Facebook</a></div>
+
+            <div class="footer-item"><a href="https://pandas.pydata.org/" title="Pandas">
+                Pandas</a></div>
+            <div class="footer-item"><a href="https://www.python.org/" title="Python">
+                Python</a></div>
+
+        </div>
+        <div class="footer-block-2">
+            <div class="footer-tit">Redes Sociales</div>
+            <div class="footer-item"><a href="https://developer.twitter.com/" title=" Twitter">
+                Twitter</a></div>
+            <div class="footer-item"><a href="http://www.facebook.com/" title=" Facebook">
+                Facebook</a></div>
+        </div>
+        <div class="ficon-wrapper"><a class="aicon" target="_blank" href="http://www.facebook.com/"
+                                      rel="external nofollow"><i class="fa fa-facebook"></i></a> <a class="bicon"
+                                                                                                    target="_blank"
+                                                                                                    href="https://twitter.com/"
+                                                                                                    rel="external nofollow"><i
+                class="fa fa-twitter"></i></a></div>
+    </div>
+</footer>
 </body>
 </html>
