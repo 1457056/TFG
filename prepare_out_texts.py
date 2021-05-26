@@ -15,22 +15,27 @@ def build_result_df(testDataSet, data_classified,data_comments):
     :return: data_classified
     """
 
-    for tweet in testDataSet:
-        p = tp.naive_bayes_predict(tweet['text'], logprior, loglikelihood)
-        print(f'{tweet["text"]} -> {p:.2f}')
-        data_comments=comments(tweet, data_comments)
+    for text in testDataSet:
+        p = tp.naive_bayes_predict(text['text'], logprior, loglikelihood)
+        print(f'{text["text"]} -> {p:.2f}')
+        data_comments=comments(text, data_comments)
         data_classified = data_classified.append({
-            'Tweet': pt.remove_usernames(tweet['text']),
+            'Tweet': pt.remove_usernames(text['text']),
             'Label': label(p),
             'Rate': p,
             'Pos_com': get_pos(data_comments),
             'Neg_com': get_neg(data_comments),
             'Neu_com': get_neu(data_comments),
-            'Id': (tweet['id'])
+            'Id': (text['id'])
         }, ignore_index=True)
     return data_classified
 
 def top_texts(result_df):
+    """
+    Metodo que coge los dos textos mas pos y neg
+    :param result_df: dataframe con todos los textos
+    :return: devuelve el df con los textos mas relevantes
+    """
     new_df = result_df.sort_values('Rate')
     index = new_df.iloc[2:-2].index
     new_result_df = new_df.drop(index)
@@ -50,9 +55,15 @@ def label(p):
 
     return label
 
-def comments(tweet,df_comments):
+def comments(text,df_comments):
+    """
+    Metodo que calcula el sentimiento de los comentarios de un solo post
+    :param text: testo del post que contiene comentarios
+    :param df_comments: dataframe con la probabilidad de los comentarios de un texto
+    :return:
+    """
     try:
-        for comment in tweet['comments']:
+        for comment in text['comments']:
             p = tp.naive_bayes_predict(comment['comment_text'], logprior, loglikelihood)
             df_comments=df_comments.append({
                 'label': label(p)
@@ -62,6 +73,11 @@ def comments(tweet,df_comments):
         return 0
 
 def get_pos(data_comments):
+    """
+    Metodo que calcula el % de comentarios positivos de un post
+    :param data_comments:
+    :return:
+    """
     pos = 0
     try:
         for label in data_comments['label']:
@@ -74,6 +90,11 @@ def get_pos(data_comments):
         return 0
 
 def get_neg(data_comments):
+    """
+    Metodo que calcula el % de comentarios negativos de un post
+    :param data_comments:
+    :return:
+    """
     neg = 0
     try:
         for label in data_comments['label']:
@@ -87,6 +108,11 @@ def get_neg(data_comments):
         return 0
 
 def get_neu(data_comments):
+    """
+    Metodo que calcula el % de comentarios neutrales de un post
+    :param data_comments:
+    :return:
+    """
     neu = 0
     try:
         for label in data_comments['label']:

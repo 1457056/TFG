@@ -34,13 +34,16 @@ def getApi():
 
 # Run this cell to test your function
 def buildTestSet(search_keyword, num, start_date, end_date):
-    test_data = []
-    API_LIMIT = 900
     """
     Método que utiliza la API de Twitter para descargar un conjunto de tweets a analizar
-    :param search_keyword: Usuario, palabra o #
+    :param search_keyword:
+    :param num:
+    :param start_date:
+    :param end_date:
     :return:
     """
+    test_data = []
+    API_LIMIT = 900
     try:
         api = getApi()
         new_num = num
