@@ -1,13 +1,13 @@
 import json
 import time
 
-from Webpage import test_texts as tp
+import test_texts as tp
 import pickle
 import tweepy as tw
 import pandas as pd
-from Webpage import process_texts as pt
+import process_texts as pt
 import matplotlib.pyplot as plt
-from Webpage import prepare_out_texts as pot
+import prepare_out_texts as pot
 from PIL import Image
 import io
 from os import remove
@@ -84,7 +84,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
 
 # ------------------------------------------------------------------------
 
-data_classified = pd.DataFrame(columns=['Tweet', 'Label', 'Rate','Id'])
+data_classified = pd.DataFrame(columns=['Tweet', 'Label', 'Rate','Id','Comments'])
 
 
 def df_to_json(df_tweets):
@@ -93,9 +93,9 @@ def df_to_json(df_tweets):
     :param df_tweets: Df resultante de la predicción
     """
 
-    df_tweets.to_json('/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.json', orient='split')
+    df_tweets.to_json(r'C:\Users\Usuario\Desktop\TFG\Twitter\df_tw.json', orient='split')
 
-    with open(r'/home/gerard/Escritorio/TFG_deb/Webpage/Twitter/df_tw.json') as f:
+    with open(r'C:\Users\Usuario\Desktop\TFG\Twitter\df_tw.json') as f:
         result = json.load(f)
 
     return result
@@ -103,7 +103,7 @@ def df_to_json(df_tweets):
 
 def main(search_term, num, start, end):
     testDataSet = buildTestSet(search_term, num, start, end)
-    result_df = pot.build_result_df(testDataSet, data_classified)
+    result_df = pot.build_result_df(testDataSet, data_classified,None)
 
     max_tweets = pot.top_texts(result_df)
     result_json = df_to_json(max_tweets)

@@ -22,7 +22,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 app = Flask(__name__)
 
-with open("/home/gerard/Escritorio/TFG_deb/Webpage/static/stopwords_sp", "r") as f:
+with open(r"C:\Users\Usuario\Desktop\TFG\static\stopwords_sp", "r") as f:
     stopw_sp=[line.strip() for line in f]
 
 def wordcloud_texts(texts,type):
@@ -35,17 +35,17 @@ def wordcloud_texts(texts,type):
     all_headlines = ' '.join(texts['Tweet'].str.lower())
 
     if type == 'tw':
-        my_mask = np.array(Image.open('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/tw_logo.png'))
+        my_mask = np.array(Image.open(r'C:\Users\Usuario\Desktop\TFG\static\images\tw_logo.png'))
         words=2000
     else:
-        my_mask = np.array(Image.open('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/fb_logo.png'))
+        my_mask = np.array(Image.open(r'C:\Users\Usuario\Desktop\TFG\static\images\fb_logo.png'))
         words=1000
 
     wordcloud = WordCloud(stopwords=stopwords, mask=my_mask, contour_width=3,
                contour_color='black', background_color="white", max_words=words).generate(all_headlines)
-    wordcloud.to_file('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/wordcloud.jpg')
+    wordcloud.to_file(r'C:\Users\Usuario\Desktop\TFG\static\images\wordcloud.jpg')
 
-    im = Image.open('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/wordcloud.jpg')
+    im = Image.open(r'C:\Users\Usuario\Desktop\TFG\static\images\wordcloud.jpg')
     data = io.BytesIO()
     im.save(data, "JPEG")
 
@@ -67,7 +67,7 @@ def circular_graphic(tweets):
     plt.axis('equal')
 
     now_image = str(datetime.time)
-    plt.savefig('/home/gerard/Escritorio/TFG_deb/Webpage/static/images/circular_graph.svg',transparent=False)
+    plt.savefig(r'C:\Users\Usuario\Desktop\TFG\static\images\circular_graph.svg',transparent=False)
 
 
 def excel(dframe):
@@ -76,7 +76,7 @@ def excel(dframe):
     @param dframe:
     @param type:
     """
-    dframe.to_excel('/home/gerard/Escritorio/TFG_deb/Webpage/Result_df/df_posts.xlsx')
+    dframe.to_excel(r'C:\Users\Usuario\Desktop\TFG\Result_df\df_posts.xlsx')
 
 
 # default page of our web-app
@@ -169,4 +169,4 @@ def download_file():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    app.run( debug=True)
