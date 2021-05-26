@@ -75,11 +75,19 @@
                             lang="es" dir="ltr"></p>&mdash;
                         <a href="https://twitter.com/twitter/statuses/{{item[3]}}"></a></blockquote>
                     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                    <table class="table table-hover">
+                        <tbody>
+                        <tr>
+                            <th scope="row">Label</th>
+                            <td>{{item[1]}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Rate</th>
+                            <td>{{item[2]}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
 
-                    <div class="card">
-                        <p class="card-text">Label: {{item[1]}}</p>
-                        <p class="card-text">Rate: {{item[2]}}</p>
-                    </div>
                 </div>
             </div>
             {% endfor %}

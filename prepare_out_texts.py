@@ -67,7 +67,9 @@ def get_pos(data_comments):
         for label in data_comments['label']:
             if label=='Positive':
                 pos = pos +1
-        return (pos / data_comments.shape[0])*100
+        percentage = (pos / data_comments.shape[0]) * 100
+        percentage=round(percentage, 2)
+        return percentage
     except:
         return 0
 
@@ -77,7 +79,9 @@ def get_neg(data_comments):
         for label in data_comments['label']:
             if label == 'Negative':
                 neg = neg + 1
-        return (neg / data_comments.shape[0])*100
+        percentage=(neg / data_comments.shape[0]) * 100
+        percentage=round(percentage, 2)
+        return percentage
 
     except:
         return 0
@@ -88,6 +92,8 @@ def get_neu(data_comments):
         for label in data_comments['label']:
             if label == 'Neutral':
                 neu = neu + 1
-        return (neu / data_comments.shape[0])*100
+        percentage=(neu / data_comments.shape[0]) * 100
+        percentage=round(percentage, 2)
+        return percentage
     except:
         return 0

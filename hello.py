@@ -164,7 +164,7 @@ def download_file():
     Método para descargar excel con análisis
     @return:
     """
-    path = "/home/gerard/Escritorio/TFG_deb/Webpage/Result_df/df_posts.xlsx"
+    path = r"C:\Users\Usuario\Desktop\TFG\Result_df\df_posts.xlsx"
     return send_file(path, as_attachment=True)
 
 

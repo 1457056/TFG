@@ -14,9 +14,9 @@ def df_to_json(df_tweets):
     Transforma el df en un excel y en un json para subirlo a mongo
     :param df_tweets: Df resultante de la predicción
     """
-    df_tweets.to_json(r'C:\Users\Usuario\Desktop\TFG\df_tw.json', orient='split')
+    df_tweets.to_json(r'C:\Users\Usuario\Desktop\TFG\Facebook\df_fb.json', orient='split')
 
-    with open(r'C:\Users\Usuario\Desktop\TFG\df_tw.json') as f:
+    with open(r'C:\Users\Usuario\Desktop\TFG\Facebook\df_fb.json') as f:
         result = json.load(f)
 
     return result

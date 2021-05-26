@@ -75,13 +75,33 @@
                                 allowfullscreen="true"
                                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
                     </center>
-                    <div class="card-body-text">
-                        <p class="card-text">Label: {{item[1]}}</p>
-                        <p class="card-text">Rate: {{item[2]}}</p>
-                        <p class="card-text">Comentarios positivos: {{item[5]}}</p>
-                        <p class="card-text">Comentarios negativos: {{item[7]}}</p>
-                        <p class="card-text">Comentarios neutros: {{item[6]}}</p>
-                    </div>
+
+                    <table class="table table-hover">
+                        <tbody>
+                        <tr>
+                            <th scope="row">Label</th>
+                            <td>{{item[1]}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Rate</th>
+                            <td>{{item[2]}}</td>
+
+                        </tr>
+                        <tr>
+                            <th scope="row">Comentarios positivos</th>
+                            <td>{{item[7]}}%</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Comentarios negativos</th>
+                            <td>{{item[5]}}%</td>
+
+                        </tr>
+                        <tr>
+                            <th scope="row">Comentarios neutros</th>
+                            <td>{{item[6]}}%</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
 
             </div>
