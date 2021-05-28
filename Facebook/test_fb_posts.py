@@ -14,20 +14,20 @@ def df_to_json(df_tweets):
     Transforma el df en un excel y en un json para subirlo a mongo
     :param df_tweets: Df resultante de la predicción
     """
-    df_tweets.to_json(r'C:\Users\Usuario\Desktop\TFG\Facebook\df_fb.json', orient='split')
+    df_tweets.to_json(r'D:\UAB\Uni\TFG\def_TFG\Facebook\df_fb.json', orient='split')
 
-    with open(r'C:\Users\Usuario\Desktop\TFG\Facebook\df_fb.json') as f:
+    with open(r'D:\UAB\Uni\TFG\def_TFG\Facebook\df_fb.json') as f:
         result = json.load(f)
 
     return result
 
-data_classified = pd.DataFrame(columns=['Tweet', 'Label', 'Rate','Comments', 'Id'])
+data_classified = pd.DataFrame(columns=['Id','Tweet', 'Label', 'Rate','Comments'])
 data_classified_comments = pd.DataFrame(columns=['label'])
 
 def main(search_term,num):
     testDataSet=buldTestSet(search_term,num)
-    result_df = pot.build_result_df(testDataSet, data_classified,data_classified_comments)
+    result_df,data_infrom = pot.build_result_df(testDataSet, data_classified,data_classified_comments)
     max_posts=pot.top_texts(result_df)
     result_json = df_to_json(max_posts)
-    return(result_json, result_df)
+    return(result_json, result_df, data_infrom)
 

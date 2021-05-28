@@ -1,14 +1,18 @@
 import pickle
 import test_texts as tp
 import process_texts as pt
+import pandas as pd
 
 # Load the variables of the training
-with open(r'C:\Users\Usuario\Desktop\TFG\Training results\logprior.pkl', 'rb') as f:
+with open(r'D:\UAB\Uni\TFG\def_TFG\Training results\logprior.pkl', 'rb') as f:
     logprior = pickle.load(f)
-with open(r'C:\Users\Usuario\Desktop\TFG\Training results\loglikelihood.pkl', 'rb') as f:
+with open(r'D:\UAB\Uni\TFG\def_TFG\Training results\loglikelihood.pkl', 'rb') as f:
     loglikelihood = pickle.load(f)
 
-def build_result_df(testDataSet, data_classified,data_comments):
+data_classified_comments = pd.DataFrame(columns=['Comentarios'])
+
+
+def build_result_df(testDataSet, data_classified, data_comments):
     """
     Metodo que construye el dataframe resultante con el tweet, la polaridad y el rating
     :param data_classified:
@@ -20,15 +24,32 @@ def build_result_df(testDataSet, data_classified,data_comments):
         print(f'{text["text"]} -> {p:.2f}')
         data_comments=comments(text, data_comments)
         data_classified = data_classified.append({
+            'Id': (text['id']),
             'Tweet': pt.remove_usernames(text['text']),
             'Label': label(p),
             'Rate': p,
+            'Comments': "",
             'Pos_com': get_pos(data_comments),
             'Neg_com': get_neg(data_comments),
-            'Neu_com': get_neu(data_comments),
-            'Id': (text['id'])
+            'Neu_com': get_neu(data_comments)
         }, ignore_index=True)
-    return data_classified
+        try:
+            for comment in text['comments']:
+                data_classified = data_classified.append({
+                    'Comments': comment['comment_text']
+                }, ignore_index=True)
+        except:
+            continue
+
+
+    data_inform = data_classified
+    data_classified=data_classified.drop(['Comments'], axis=1)
+    data_classified = data_classified[data_classified['Id'].notna()]
+
+
+
+    return data_classified,data_inform
+
 
 def top_texts(result_df):
     """
@@ -40,6 +61,7 @@ def top_texts(result_df):
     index = new_df.iloc[2:-2].index
     new_result_df = new_df.drop(index)
     return new_result_df
+
 
 def label(p):
     """
@@ -55,7 +77,8 @@ def label(p):
 
     return label
 
-def comments(text,df_comments):
+
+def comments(text, df_comments):
     """
     Metodo que calcula el sentimiento de los comentarios de un solo post
     :param text: testo del post que contiene comentarios
@@ -65,12 +88,13 @@ def comments(text,df_comments):
     try:
         for comment in text['comments']:
             p = tp.naive_bayes_predict(comment['comment_text'], logprior, loglikelihood)
-            df_comments=df_comments.append({
+            df_comments = df_comments.append({
                 'label': label(p)
-            },ignore_index=True)
+            }, ignore_index=True)
         return df_comments
     except:
         return 0
+
 
 def get_pos(data_comments):
     """
@@ -81,13 +105,14 @@ def get_pos(data_comments):
     pos = 0
     try:
         for label in data_comments['label']:
-            if label=='Positive':
-                pos = pos +1
+            if label == 'Positive':
+                pos = pos + 1
         percentage = (pos / data_comments.shape[0]) * 100
-        percentage=round(percentage, 2)
+        percentage = round(percentage, 2)
         return percentage
     except:
         return 0
+
 
 def get_neg(data_comments):
     """
@@ -100,12 +125,13 @@ def get_neg(data_comments):
         for label in data_comments['label']:
             if label == 'Negative':
                 neg = neg + 1
-        percentage=(neg / data_comments.shape[0]) * 100
-        percentage=round(percentage, 2)
+        percentage = (neg / data_comments.shape[0]) * 100
+        percentage = round(percentage, 2)
         return percentage
 
     except:
         return 0
+
 
 def get_neu(data_comments):
     """
@@ -118,8 +144,8 @@ def get_neu(data_comments):
         for label in data_comments['label']:
             if label == 'Neutral':
                 neu = neu + 1
-        percentage=(neu / data_comments.shape[0]) * 100
-        percentage=round(percentage, 2)
+        percentage = (neu / data_comments.shape[0]) * 100
+        percentage = round(percentage, 2)
         return percentage
     except:
         return 0

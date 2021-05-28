@@ -9,7 +9,7 @@
           integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-    <script src="../../static/js/functions.js"></script>
+    <script src="{{url_for('static', filename='js/functions_js.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"
             integrity="sha512-pdCVFUWsxl1A4g0uV6fyJ3nrnTGeWnZN2Tl/56j45UvZ1OMdm9CIbctuIHj+yBIRTUUyv6I9+OivXj4i0LPEYA=="
             crossorigin="anonymous"></script>
@@ -69,36 +69,36 @@
 
                 <div class="card-body">
                     <center>
-                        <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Frtve%2Fposts%{{item[4]}}&show_text=true&width=500"
+                        <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Frtve%2Fposts%{{item[0]}}&show_text=true&width=500"
                                 width="550" height="550" style="border:none;overflow:hidden" scrolling="no"
                                 frameborder="0"
                                 allowfullscreen="true"
                                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
                     </center>
 
-                    <table class="table table-hover">
+                    <table class="table table-hover" id="table_res">
                         <tbody>
                         <tr>
                             <th scope="row">Label</th>
-                            <td>{{item[1]}}</td>
+                            <td>{{item[2]}}</td>
                         </tr>
                         <tr>
-                            <th scope="row">Rate</th>
-                            <td>{{item[2]}}</td>
+                            <th scope="row" >Rate</th>
+                            <td id="rate" onload="changeColor()">{{item[3]}}</td>
 
                         </tr>
                         <tr>
                             <th scope="row">Comentarios positivos</th>
-                            <td>{{item[7]}}%</td>
+                            <td>{{item[6]}}%</td>
                         </tr>
                         <tr>
                             <th scope="row">Comentarios negativos</th>
-                            <td>{{item[5]}}%</td>
+                            <td>{{item[4]}}%</td>
 
                         </tr>
                         <tr>
                             <th scope="row">Comentarios neutros</th>
-                            <td>{{item[6]}}%</td>
+                            <td>{{item[5]}}%</td>
                         </tr>
                         </tbody>
                     </table>
@@ -140,7 +140,7 @@
                 <div class="dropdown-menu mb-5" aria-labelledby="dropdownMenu2">
                     <button id="download" class="dropdown-item"> Descargar PDF
                     </button>
-                    <a href="{{ url_for('.download_file') }}">
+                    <a href="{{ url_for('.downloadFile') }}">
                         <button class="dropdown-item"> Descargar informe</button>
                     </a>
                 </div>

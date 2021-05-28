@@ -9,7 +9,7 @@
           integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-    <script src="../../static/js/functions.js"></script>
+    <script src="../../static/js/functions_js.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"
             integrity="sha512-pdCVFUWsxl1A4g0uV6fyJ3nrnTGeWnZN2Tl/56j45UvZ1OMdm9CIbctuIHj+yBIRTUUyv6I9+OivXj4i0LPEYA=="
             crossorigin="anonymous"></script>
@@ -73,17 +73,17 @@
                     <blockquote class="twitter-tweet" data-conversation="none" data-lang="es" data-theme="light"
                                 width="550" height="550"><p
                             lang="es" dir="ltr"></p>&mdash;
-                        <a href="https://twitter.com/twitter/statuses/{{item[3]}}"></a></blockquote>
+                        <a href="https://twitter.com/twitter/statuses/{{item[0]}}"></a></blockquote>
                     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                     <table class="table table-hover">
                         <tbody>
                         <tr>
                             <th scope="row">Label</th>
-                            <td>{{item[1]}}</td>
+                            <td >{{item[2]}}</td>
                         </tr>
                         <tr>
                             <th scope="row">Rate</th>
-                            <td>{{item[2]}}</td>
+                            <td id="rate">{{item[3]}}</td>
                         </tr>
                         </tbody>
                     </table>
@@ -126,7 +126,7 @@
                 <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
                     <button id="download" class="dropdown-item"> Descargar PDF
                     </button>
-                    <a href="{{ url_for('.download_file') }}">
+                    <a href="{{ url_for('.downloadFile') }}">
                         <button class="dropdown-item"> Descargar informe</button>
                     </a>
                 </div>

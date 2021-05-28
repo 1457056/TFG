@@ -87,7 +87,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
 
 # ------------------------------------------------------------------------
 
-data_classified = pd.DataFrame(columns=['Tweet', 'Label', 'Rate','Id','Comments'])
+data_classified = pd.DataFrame(columns=['Id','Tweet', 'Label', 'Rate','Comments'])
 
 
 def df_to_json(df_tweets):
@@ -96,9 +96,9 @@ def df_to_json(df_tweets):
     :param df_tweets: Df resultante de la predicción
     """
 
-    df_tweets.to_json(r'C:\Users\Usuario\Desktop\TFG\Twitter\df_tw.json', orient='split')
+    df_tweets.to_json(r'D:\UAB\Uni\TFG\def_TFG\Twitter\df_tw.json', orient='split')
 
-    with open(r'C:\Users\Usuario\Desktop\TFG\Twitter\df_tw.json') as f:
+    with open(r'D:\UAB\Uni\TFG\def_TFG\Twitter\df_tw.json') as f:
         result = json.load(f)
 
     return result
@@ -106,8 +106,7 @@ def df_to_json(df_tweets):
 
 def main(search_term, num, start, end):
     testDataSet = buildTestSet(search_term, num, start, end)
-    result_df = pot.build_result_df(testDataSet, data_classified,None)
-
+    result_df,inform = pot.build_result_df(testDataSet, data_classified,None)
     max_tweets = pot.top_texts(result_df)
     result_json = df_to_json(max_tweets)
-    return (result_json, result_df)
+    return (result_json, result_df,inform)

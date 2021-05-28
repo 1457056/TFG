@@ -1,5 +1,6 @@
 import datetime
-
+import time
+from os import remove
 import numpy as np
 from wordcloud import WordCloud, ImageColorGenerator
 from flask import Flask, render_template, request, send_from_directory, current_app, send_file
@@ -10,6 +11,8 @@ import base64
 import matplotlib
 import nltk
 from nltk.corpus import stopwords
+from datetime import datetime
+
 nltk.download('stopwords')
 stop_words_sp = list(stopwords.words('spanish'))
 stop_words_en = list(stopwords.words('english'))
@@ -22,30 +25,32 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 app = Flask(__name__)
 
-with open(r"C:\Users\Usuario\Desktop\TFG\static\stopwords_sp", "r") as f:
-    stopw_sp=[line.strip() for line in f]
+with open(r"D:\UAB\Uni\TFG\def_TFG\static\stopwords_sp", "r") as f:
+    stopw_sp = [line.strip() for line in f]
 
-def wordcloud_texts(texts,type):
+
+def wordcloud_texts(texts, type):
     """
     Metodo para crear el wordcloud
     :param texts:
     :return:
     """
-    stopwords = (['AT_USER', 'https', 'RT', 'de', 'la', 'con', 'por', 'en', 'una', 'que', 'q', 'y', 'el', 'lo', 'se', 'a','un','t','co']+stop_words_sp+stopw_sp+stop_words_en)
+    stopwords = (['AT_USER', 'https', 'RT', 'de', 'la', 'con', 'por', 'en', 'una', 'que', 'q', 'y', 'el', 'lo', 'se',
+                  'a', 'un', 't', 'co'] + stop_words_sp + stopw_sp + stop_words_en)
     all_headlines = ' '.join(texts['Tweet'].str.lower())
 
     if type == 'tw':
-        my_mask = np.array(Image.open(r'C:\Users\Usuario\Desktop\TFG\static\images\tw_logo.png'))
-        words=2000
+        my_mask = np.array(Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_logo.png'))
+        words = 2000
     else:
-        my_mask = np.array(Image.open(r'C:\Users\Usuario\Desktop\TFG\static\images\fb_logo.png'))
-        words=1000
+        my_mask = np.array(Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_logo.png'))
+        words = 1000
 
     wordcloud = WordCloud(stopwords=stopwords, mask=my_mask, contour_width=3,
-               contour_color='black', background_color="white", max_words=words).generate(all_headlines)
-    wordcloud.to_file(r'C:\Users\Usuario\Desktop\TFG\static\images\wordcloud.jpg')
+                          contour_color='black', background_color="white", max_words=words).generate(all_headlines)
+    wordcloud.to_file(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
 
-    im = Image.open(r'C:\Users\Usuario\Desktop\TFG\static\images\wordcloud.jpg')
+    im = Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
     data = io.BytesIO()
     im.save(data, "JPEG")
 
@@ -60,14 +65,16 @@ def circular_graphic(tweets):
     @param tweets:
     @return:
     """
-    labels =['Positive', 'Negative', 'Neutral']
-    data=tweets['Label'].value_counts()
-    plt.pie(data, colors=['yellowgreen','red','blue'],shadow=True)
+    labels = ['Positive', 'Negative', 'Neutral']
+    data = tweets['Label'].value_counts()
+    plt.pie(data, colors=['yellowgreen', 'red', 'blue'], shadow=True,autopct='%.2f')
     plt.legend(labels)
     plt.axis('equal')
+    now=datetime.now().timestamp()
+    now = str(now)
+    plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\circular_graph.svg', transparent=False)
 
-    now_image = str(datetime.time)
-    plt.savefig(r'C:\Users\Usuario\Desktop\TFG\static\images\circular_graph.svg',transparent=False)
+    return now
 
 
 def excel(dframe):
@@ -76,7 +83,7 @@ def excel(dframe):
     @param dframe:
     @param type:
     """
-    dframe.to_excel(r'C:\Users\Usuario\Desktop\TFG\Result_df\df_posts.xlsx')
+    dframe.to_excel(r'D:\UAB\Uni\TFG\def_TFG\Result_df\df_postss.xlsx')
 
 
 # default page of our web-app
@@ -136,12 +143,15 @@ def predict():
                 input_date_start = request.form['start']
                 input_date_end = request.form['end']
 
-            prediction, texts = tt.main(input_text, input_number, input_date_start, input_date_end)
-            excel(texts)
-            wordcloudpic = wordcloud_texts(texts,'tw')
-            circular_graphic(texts)
-            return render_template('/base/predict.html', prediction_text=prediction['data'], wordcloud=wordcloudpic.decode('utf-8'))
+            prediction, texts, inform = tt.main(input_text, input_number, input_date_start, input_date_end)
 
+            excel(texts)
+            wordcloudpic = wordcloud_texts(texts, 'tw')
+            remove('static/images/circular_graph.svg')
+            now = circular_graphic(texts)
+
+            return render_template('/base/predict.html', prediction_text=prediction['data'],
+                                   wordcloud=wordcloudpic.decode('utf-8'))
 
 
         elif 'facebook' in request.form:
@@ -150,23 +160,24 @@ def predict():
             if 'number' in request.form:
                 input_number = int(request.form['number'])
 
-            prediction, texts = tf.main(input_text, input_number)
-            excel(texts)
-            wordcloudpic = wordcloud_texts(texts,'fb')
-            circular_graphic(texts)
+            prediction, texts, inform = tf.main(input_text, input_number)
+            excel(inform)
+            wordcloudpic = wordcloud_texts(texts, 'fb')
+            now=circular_graphic(texts)
 
-            return render_template('/base/predict_fb.html', prediction_text=prediction['data'],wordcloud=wordcloudpic.decode('utf-8'))
+            return render_template('/base/predict_fb.html', prediction_text=prediction['data'],
+                                   wordcloud=wordcloudpic.decode('utf-8'), path_graph=now)
 
-"graphic=graphic.decode('utf-8')"
-@app.route('/download')
-def download_file():
+
+@app.route('/download_info')
+def downloadFile():
     """
     Método para descargar excel con análisis
     @return:
     """
-    path = r"C:\Users\Usuario\Desktop\TFG\Result_df\df_posts.xlsx"
+    path = "Result_df/df_postss.xlsx"
     return send_file(path, as_attachment=True)
 
 
 if __name__ == "__main__":
-    app.run( debug=True)
+    app.run(debug=True)
