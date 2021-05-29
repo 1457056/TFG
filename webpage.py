@@ -72,7 +72,7 @@ def circular_graphic(tweets):
 
     data = tweets['Label'].value_counts()
     plt.figure()
-    plt.pie(data, colors=['yellowgreen', 'red', 'blue'], shadow=True, autopct='%.2f')
+    plt.pie(data, colors=['lightgreen', 'lightcoral', 'lightblue'], shadow=True, autopct='%.2f')
     plt.legend(labels)
     plt.axis('equal')
     now = datetime.now().timestamp()
@@ -155,7 +155,6 @@ def predict():
 
             excel(texts)
             wordcloudpic = wordcloud_texts(texts, 'tw')
-            #remove('static/images/circular_graph.svg')
             circular_graphic(texts)
 
             return render_template('/base/predict.html', prediction_text=prediction['data'],
@@ -171,10 +170,10 @@ def predict():
             prediction, texts, inform = tf.main(input_text, input_number)
             excel(inform)
             wordcloudpic = wordcloud_texts(texts, 'fb')
-            now = circular_graphic(texts)
+            circular_graphic(texts)
 
             return render_template('/base/predict_fb.html', prediction_text=prediction['data'],
-                                   wordcloud=wordcloudpic.decode('utf-8'), path_graph=now)
+                                   wordcloud=wordcloudpic.decode('utf-8'))
 
 
 @app.route('/download_info')
