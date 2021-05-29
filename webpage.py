@@ -12,13 +12,15 @@ import matplotlib
 import nltk
 from nltk.corpus import stopwords
 from datetime import datetime
+import seaborn as sns
+sns.set()
+import stylecloud
 
 nltk.download('stopwords')
 stop_words_sp = list(stopwords.words('spanish'))
 stop_words_en = list(stopwords.words('english'))
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 # Initialize the flask App
 
@@ -50,6 +52,7 @@ def wordcloud_texts(texts, type):
                           contour_color='black', background_color="white", max_words=words).generate(all_headlines)
     wordcloud.to_file(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
 
+
     im = Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
     data = io.BytesIO()
     im.save(data, "JPEG")
@@ -66,13 +69,18 @@ def circular_graphic(tweets):
     @return:
     """
     labels = ['Positive', 'Negative', 'Neutral']
+
     data = tweets['Label'].value_counts()
-    plt.pie(data, colors=['yellowgreen', 'red', 'blue'], shadow=True,autopct='%.2f')
+    plt.figure()
+    plt.pie(data, colors=['yellowgreen', 'red', 'blue'], shadow=True, autopct='%.2f')
     plt.legend(labels)
     plt.axis('equal')
-    now=datetime.now().timestamp()
+    now = datetime.now().timestamp()
     now = str(now)
     plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\circular_graph.svg', transparent=False)
+
+    del data
+    del labels
 
     return now
 
@@ -147,8 +155,8 @@ def predict():
 
             excel(texts)
             wordcloudpic = wordcloud_texts(texts, 'tw')
-            remove('static/images/circular_graph.svg')
-            now = circular_graphic(texts)
+            #remove('static/images/circular_graph.svg')
+            circular_graphic(texts)
 
             return render_template('/base/predict.html', prediction_text=prediction['data'],
                                    wordcloud=wordcloudpic.decode('utf-8'))
@@ -163,7 +171,7 @@ def predict():
             prediction, texts, inform = tf.main(input_text, input_number)
             excel(inform)
             wordcloudpic = wordcloud_texts(texts, 'fb')
-            now=circular_graphic(texts)
+            now = circular_graphic(texts)
 
             return render_template('/base/predict_fb.html', prediction_text=prediction['data'],
                                    wordcloud=wordcloudpic.decode('utf-8'), path_graph=now)

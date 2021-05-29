@@ -5,7 +5,7 @@ import prepare_out_texts as pot
 
 
 def buldTestSet(search_term,num):
-    return [{"text": status['text'], "label": None, "likes": status['likes'],'comments':status['comments_full'], 'id': '2F'+status['post_id']} for status in get_posts(search_term, pages=num, options={"comments": True})]
+    return [{"text": status['text'], "label": None, "likes": status['likes'],'comments':status['comments_full'], 'id': '2F'+status['post_id'], 'reactions':status['reactions']} for status in get_posts(search_term, pages=num, options={"comments": True, "reactors":True})]
 
 
 
@@ -21,7 +21,7 @@ def df_to_json(df_tweets):
 
     return result
 
-data_classified = pd.DataFrame(columns=['Id','Tweet', 'Label', 'Rate','Comments'])
+data_classified = pd.DataFrame(columns=['Id','Tweet', 'Label', 'Rate','Comments','Reactions'])
 data_classified_comments = pd.DataFrame(columns=['label'])
 
 def main(search_term,num):

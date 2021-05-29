@@ -54,6 +54,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    function changeColor() {
+        $('#taula_resultats tr').each(function () {
+            $(this).find('#rate').each(function () {
+                if (($(this)[0].innerHTML) < - 0.5 ){
+                    $(this).css("background-color","lightcoral");
+                }
+                else if ((($(this)[0].innerHTML) >= - 0.5) && ((($(this)[0].innerHTML) <=  0.5) )){
+                    $(this).css("background-color","lightblue");
+                }
+                else{
+                    $(this).css("background-color","lightgreen");
+                }
+            })
+        });
+    }
+    changeColor();
+
 });
+
+
 
 

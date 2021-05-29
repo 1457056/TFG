@@ -31,7 +31,7 @@ def build_result_df(testDataSet, data_classified, data_comments):
             'Comments': "",
             'Pos_com': get_pos(data_comments),
             'Neg_com': get_neg(data_comments),
-            'Neu_com': get_neu(data_comments)
+            'Neu_com': get_neu(data_comments),
         }, ignore_index=True)
         try:
             for comment in text['comments']:
@@ -49,7 +49,6 @@ def build_result_df(testDataSet, data_classified, data_comments):
 
 
     return data_classified,data_inform
-
 
 def top_texts(result_df):
     """
