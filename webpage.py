@@ -68,21 +68,29 @@ def circular_graphic(tweets):
     @param tweets:
     @return:
     """
-    labels = ['Positive', 'Negative', 'Neutral']
+
+    labels=[]
+    colors=[]
 
     data = tweets['Label'].value_counts()
+    for i in data.index:
+        labels.append(i)
+        if i == 'Positive':
+            colors.append('lightgreen')
+        elif i == 'Negative':
+            colors.append('lightcoral')
+        else:
+            colors.append('ligthblue')
+
     plt.figure()
-    plt.pie(data, colors=['lightgreen', 'lightcoral', 'lightblue'], shadow=True, autopct='%.2f')
-    plt.legend(labels)
+    plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f')
+    plt.legend()
     plt.axis('equal')
-    now = datetime.now().timestamp()
-    now = str(now)
     plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\circular_graph.svg', transparent=False)
 
     del data
     del labels
 
-    return now
 
 
 def excel(dframe):

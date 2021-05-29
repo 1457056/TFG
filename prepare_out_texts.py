@@ -22,7 +22,7 @@ def build_result_df(testDataSet, data_classified, data_comments):
     for text in testDataSet:
         p = tp.naive_bayes_predict(text['text'], logprior, loglikelihood)
         print(f'{text["text"]} -> {p:.2f}')
-        data_comments=comments(text, data_comments)
+        data_comments = comments(text, data_comments)
         data_classified = data_classified.append({
             'Id': (text['id']),
             'Tweet': pt.remove_usernames(text['text']),
@@ -41,14 +41,14 @@ def build_result_df(testDataSet, data_classified, data_comments):
         except:
             continue
 
+    data_classified['Comments'] = data_classified['Comments'].shift(periods=-1)
 
     data_inform = data_classified
-    data_classified=data_classified.drop(['Comments'], axis=1)
+    data_classified = data_classified.drop(['Comments'], axis=1)
     data_classified = data_classified[data_classified['Id'].notna()]
 
+    return data_classified, data_inform
 
-
-    return data_classified,data_inform
 
 def top_texts(result_df):
     """
@@ -69,9 +69,9 @@ def label(p):
     """
     if p > 0.5:
         label = 'Positive'
-    elif p <= 0.5 and p >= -0.5:
+    elif 0.5 >= p >= -0.5:
         label = 'Neutral'
-    else:
+    elif p < -0.5:
         label = 'Negative'
 
     return label

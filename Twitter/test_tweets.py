@@ -68,7 +68,6 @@ def buildTestSet(search_keyword, num, start_date, end_date):
                 tweets_fetched = tw.Cursor(api.search, search_keyword+'-filter:retweets', since=start_date,
                                            until=end_date,since_id=since_id, include_rts=False).items(new_num)
                 for status in tweets_fetched:
-                    print(status)
                     test_data.append({"text": status.text, "label": None,'id':status.id})
                     since_id = status.id
 
