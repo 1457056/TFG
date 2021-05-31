@@ -13,6 +13,8 @@ import nltk
 from nltk.corpus import stopwords
 from datetime import datetime
 import seaborn as sns
+import pandas as pd
+import prepare_out_texts as pot
 
 sns.set()
 import stylecloud
@@ -39,59 +41,90 @@ def wordcloud_texts(texts, type):
     :return:
     """
     stopwords = (['AT_USER', 'https', 'RT', 'de', 'la', 'con', 'por', 'en', 'una', 'que', 'q', 'y', 'el', 'lo', 'se',
-                  'a', 'un', 't', 'co'] + stop_words_sp + stopw_sp + stop_words_en)
-    all_headlines = ' '.join(texts['Tweet'].str.lower())
+                  'a', 'un', 't', 'co', 'así'] + stop_words_sp + stopw_sp + stop_words_en)
+
+
 
     if type == 'tw':
         words = 2000
-        my_mask='fab fa-twitter'
+        my_mask = 'fas fa-cloud'
+        all_headlines_tw = ' '.join(texts['Tweet'].str.lower())
+        stylecloud.gen_stylecloud(all_headlines_tw, icon_name=my_mask,
+                                  output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg',
+                                  custom_stopwords=stopwords)
     else:
         my_mask = 'fab fa-facebook'
         words = 1000
 
-    #wordcloud = WordCloud(stopwords=stopwords, mask=my_mask, contour_width=3,
-                          #contour_color='black', background_color="white", max_words=words).generate(all_headlines)
-    #wordcloud.to_file(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
+        index_texts = texts
+        index_texts = pot.top_texts(index_texts)
+        texts = texts.sort_values('Rate')
+        texts.reset_index(level=0, inplace=True)
+        index_texts.reset_index(level=0, inplace=True)
 
-    stylecloud.gen_stylecloud(all_headlines,icon_name=my_mask, output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg', custom_stopwords=stopwords)
+        for index, id in enumerate(index_texts['Id']):
+            id=index_texts['Id'][index]
+            filter_comments = texts['Comments'][texts['Id']==id]
+            filter_comments = filter_comments[:-1]
 
-    im = Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
-    data = io.BytesIO()
-    im.save(data, "JPEG")
+            all_headlines_fb = ' '.join(filter_comments.str.lower())
 
-    # Then encode the saved image file.
-    encoded_img_data = base64.b64encode(data.getvalue())
-    return encoded_img_data
+            if len(filter_comments)==0:
+                all_headlines_fb ='No hay comentarios'
+            stylecloud.gen_stylecloud(all_headlines_fb, icon_name=my_mask,
+                                      output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\wordclouds\wordcloud'+str(index)+'.jpg',
+                                      custom_stopwords=stopwords)
+
+    # wordcloud = WordCloud(stopwords=stopwords, mask=my_mask, contour_width=3,
+    # contour_color='black', background_color="white", max_words=words).generate(all_headlines)
+    # wordcloud.to_file(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
 
 
-def circular_graphic(tweets):
+def circular_graphic(texts,type):
     """
     Metodo que crea el gráfico de pastel
     @param tweets:
     @return:
     """
 
-    labels = []
-    colors = []
 
-    data = tweets['Label'].value_counts()
-    for i in data.index:
-        labels.append(i)
-        if i == 'Positive':
-            colors.append('lightgreen')
-        elif i == 'Negative':
-            colors.append('lightcoral')
-        elif i == 'Neutral':
-            colors.append('lightblue')
 
-    plt.figure()
-    plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f%%')
-    plt.legend()
-    plt.axis('equal')
-    plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\circular_graph.svg', transparent=False)
+    if type == 'tw':
+        data = texts['Label'].value_counts()
 
-    del data
-    del labels
+    else:
+        index_texts = texts
+        index_texts = pot.top_texts(index_texts)
+        texts = texts.sort_values('Rate')
+        texts.reset_index(level=0, inplace=True)
+        index_texts.reset_index(level=0, inplace=True)
+
+        for index,id in enumerate(index_texts['Id']):
+            labels = []
+            colors = []
+
+            id = index_texts['Id'][index]
+            filter_comments_label = texts['Comments label'][texts['Id'] == id]
+            filter_comments_label = filter_comments_label[:-1]
+            data = filter_comments_label.value_counts()
+
+            for i in data.index:
+                labels.append(i)
+                if i == 'Positive':
+                    colors.append('lightgreen')
+                elif i == 'Negative':
+                    colors.append('lightcoral')
+                elif i == 'Neutral':
+                    colors.append('lightblue')
+
+            plt.figure()
+            plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f%%')
+            plt.legend()
+            plt.axis('equal')
+            plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\graphics\circular_graph'+str(index)+'.svg', transparent=False)
+
+            del data
+            del labels
 
 
 def excel(dframe):
@@ -144,7 +177,6 @@ def predict():
     :return:
     """
 
-    # TODO: comprobar si existe usuario
     if flask.request.method == 'POST':
         # For rendering results on HTML GUI
         input_text = request.form['word']
@@ -161,15 +193,13 @@ def predict():
                 input_date_start = request.form['start']
                 input_date_end = request.form['end']
 
-
             prediction, texts, inform = tt.main(input_text, input_number, input_date_start, input_date_end)
 
             excel(texts)
-            wordcloudpic = wordcloud_texts(texts, 'tw')
-            circular_graphic(texts)
+            wordcloud_texts(texts, 'tw')
+            circular_graphic(texts,'tw')
 
-            return render_template('/base/predict.html', prediction_text=prediction['data'],
-                                   wordcloud=wordcloudpic.decode('utf-8'))
+            return render_template('/base/predict.html', prediction_text=prediction['data'])
 
 
         elif 'facebook' in request.form:
@@ -180,11 +210,10 @@ def predict():
 
             prediction, texts, inform = tf.main(input_text, input_number)
             excel(inform)
-            wordcloudpic = wordcloud_texts(texts, 'fb')
-            circular_graphic(texts)
+            wordcloud_texts(texts, 'fb')
+            circular_graphic(texts,'fb')
 
-            return render_template('/base/predict_fb.html', prediction_text=prediction['data'],
-                                   wordcloud=wordcloudpic.decode('utf-8'))
+            return render_template('/base/predict_fb.html', prediction_text=prediction['data'])
 
 
 @app.route('/download_info')
@@ -195,7 +224,6 @@ def downloadFile():
     """
     path = "Result_df/df_postss.xlsx"
     return send_file(path, as_attachment=True)
-
 
 
 if __name__ == "__main__":

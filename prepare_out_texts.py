@@ -9,10 +9,8 @@ with open(r'D:\UAB\Uni\TFG\def_TFG\Training results\logprior.pkl', 'rb') as f:
 with open(r'D:\UAB\Uni\TFG\def_TFG\Training results\loglikelihood.pkl', 'rb') as f:
     loglikelihood = pickle.load(f)
 
-data_classified_comments = pd.DataFrame(columns=['Comentarios'])
 
-
-def build_result_df(testDataSet, data_classified, data_comments):
+def build_result_df(testDataSet, data_classified, data_comments,rrss):
     """
     Metodo que construye el dataframe resultante con el tweet, la polaridad y el rating
     :param data_classified:
@@ -22,30 +20,46 @@ def build_result_df(testDataSet, data_classified, data_comments):
     for text in testDataSet:
         p = tp.naive_bayes_predict(text['text'], logprior, loglikelihood)
         print(f'{text["text"]} -> {p:.2f}')
-        data_comments = comments(text, data_comments)
+
+        if (rrss=='fb'):
+            data_comments = data_comments.iloc[0:0]
+            data_comments = comments(text, data_comments)
+
+        # data_comments['label'] = data_comments['label'].shift(periods=-1)
         data_classified = data_classified.append({
             'Id': (text['id']),
             'Tweet': pt.remove_usernames(text['text']),
             'Label': label(p),
             'Rate': p,
-            'Comments': "",
             'Pos_com': get_pos(data_comments),
             'Neg_com': get_neg(data_comments),
             'Neu_com': get_neu(data_comments),
+            'Comments': "",
+            'Comments rate': "",
+            'Comments label': ""
         }, ignore_index=True)
         try:
             for comment in text['comments']:
+                p_com = tp.naive_bayes_predict(comment['comment_text'], logprior, loglikelihood)
                 data_classified = data_classified.append({
-                    'Comments': comment['comment_text']
+                    'Id': (text['id']),
+                    'Comments': comment['comment_text'],
+                    'Comments rate': p_com,
+                    'Comments label': label(p_com)
                 }, ignore_index=True)
+
+
         except:
             continue
 
+
     data_classified['Comments'] = data_classified['Comments'].shift(periods=-1)
+    data_classified['Comments rate'] = data_classified['Comments rate'].shift(periods=-1)
+    data_classified['Comments label'] = data_classified['Comments label'].shift(periods=-1)
 
     data_inform = data_classified
-    data_classified = data_classified.drop(['Comments'], axis=1)
-    data_classified = data_classified[data_classified['Id'].notna()]
+    # data_classified = data_classified.drop(['Comments'], axis=1)
+    # data_classified = data_classified[data_classified['Id'].notna()]
 
     return data_classified, data_inform
 
@@ -57,6 +71,7 @@ def top_texts(result_df):
     :return: devuelve el df con los textos mas relevantes
     """
     new_df = result_df.sort_values('Rate')
+    new_df = new_df[new_df['Rate'].notna()]
     index = new_df.iloc[2:-2].index
     new_result_df = new_df.drop(index)
     return new_result_df
@@ -90,9 +105,10 @@ def comments(text, df_comments):
             df_comments = df_comments.append({
                 'label': label(p)
             }, ignore_index=True)
+
         return df_comments
     except:
-        return 0
+        return df_comments
 
 
 def get_pos(data_comments):

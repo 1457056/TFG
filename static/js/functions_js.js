@@ -57,22 +57,42 @@ document.addEventListener("DOMContentLoaded", () => {
     function changeColor() {
         $('#taula_resultats tr').each(function () {
             $(this).find('#rate').each(function () {
-                if (($(this)[0].innerHTML) < - 0.5 ){
-                    $(this).css("background-color","lightcoral");
-                }
-                else if ((($(this)[0].innerHTML) >= - 0.5) && ((($(this)[0].innerHTML) <=  0.5) )){
-                    $(this).css("background-color","lightblue");
-                }
-                else{
-                    $(this).css("background-color","lightgreen");
+                if (($(this)[0].innerHTML) < -0.5) {
+                    $(this).css("background-color", "lightcoral");
+                } else if ((($(this)[0].innerHTML) >= -0.5) && ((($(this)[0].innerHTML) <= 0.5))) {
+                    $(this).css("background-color", "lightblue");
+                } else {
+                    $(this).css("background-color", "lightgreen");
                 }
             })
         });
     }
+
     changeColor();
+
+
 
 });
 
 
+function changeFB(id) {
+    if (id==1) {
+        document.getElementById('image_graph').src = "static/images/graphics/circular_graph0.svg"
+        document.getElementById('image_wordcloud').src = "static/images/wordclouds/wordcloud0.jpg"
+    }
+
+    if(id==2){
+        document.getElementById('image_graph').src = "static/images/graphics/circular_graph1.svg"
+        document.getElementById('image_wordcloud').src = "static/images/wordclouds/wordcloud1.jpg"
+    }
+    if(id==3){
+        document.getElementById('image_graph').src = "static/images/graphics/circular_graph2.svg"
+        document.getElementById('image_wordcloud').src = "static/images/wordclouds/wordcloud2.jpg"
+    }
+    if(id==4){
+        document.getElementById('image_graph').src = "static/images/graphics/circular_graph3.svg"
+        document.getElementById('image_wordcloud').src = "static/images/wordclouds/wordcloud3.jpg"
+    }
+}
 
 

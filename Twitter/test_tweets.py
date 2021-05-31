@@ -101,7 +101,7 @@ def df_to_json(df_tweets):
 
 def main(search_term, num, start, end):
     testDataSet = buildTestSet(search_term, num, start, end)
-    result_df,inform = pot.build_result_df(testDataSet, data_classified,None)
+    result_df,inform = pot.build_result_df(testDataSet, data_classified,None,'tw')
     max_tweets = pot.top_texts(result_df)
     result_json = df_to_json(max_tweets)
     return (result_json, result_df,inform)

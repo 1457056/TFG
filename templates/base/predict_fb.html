@@ -80,28 +80,29 @@
                         <tbody>
                         <tr>
                             <th scope="row">Label</th>
-                            <td >{{item[2]}}</td>
+                            <td>{{item[2]}}</td>
                         </tr>
                         <tr>
-                            <th scope="row" >Rate</th>
+                            <th scope="row">Rate</th>
                             <td id="rate">{{item[3]}}</td>
 
                         </tr>
                         <tr>
                             <th scope="row">Comentarios positivos</th>
-                            <td>{{item[6]}}%</td>
+                            <td>{{item[9]}}%</td>
                         </tr>
                         <tr>
                             <th scope="row">Comentarios negativos</th>
-                            <td>{{item[4]}}%</td>
+                            <td>{{item[7]}}%</td>
 
                         </tr>
                         <tr>
                             <th scope="row">Comentarios neutros</th>
-                            <td>{{item[5]}}%</td>
+                            <td>{{item[8]}}%</td>
                         </tr>
                         </tbody>
                     </table>
+                    <button id="buttonBF_dash" onclick="changeFB('{{loop.index}}')">Analizar</button>
                 </div>
 
             </div>
@@ -112,7 +113,7 @@
         <div class="col-6">
             <div class="card">
                 <div class="dashboards">
-                    <img src="{{url_for('static', filename='images/circular_graph.svg')}}" class="card-img-top">
+                    <img id= "image_graph" src="static/images/graphics/circular_graph0.svg" class="card-img-top">
                     <div class="card-body">
                         <p class="card-text">Porcentage de polaridad sobre el conjunto de posts</p>
                     </div>
@@ -122,14 +123,15 @@
         <div class="col-6">
             <div class="card">
                 <div class="wordcloud">
-                    <img src="data:image/jpeg;base64,{{ wordcloud }}" class="wordc card-img-top">
+                    <img id="image_wordcloud" src="static/images/wordclouds/wordcloud0.jpg" class="wordc card-img-top">
                 </div>
                 <div class="card-body">
                     <p class="card-text">Palabras más incluidas en el conjunto de posts</p>
                 </div>
             </div>
         </div>
-
+    </div>
+    <div class="predict row mt-5">
         <div class="col-6 mt-5">
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
