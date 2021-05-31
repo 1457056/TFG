@@ -13,6 +13,7 @@ import nltk
 from nltk.corpus import stopwords
 from datetime import datetime
 import seaborn as sns
+
 sns.set()
 import stylecloud
 
@@ -42,16 +43,17 @@ def wordcloud_texts(texts, type):
     all_headlines = ' '.join(texts['Tweet'].str.lower())
 
     if type == 'tw':
-        my_mask = np.array(Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_logo.png'))
         words = 2000
+        my_mask='fab fa-twitter'
     else:
-        my_mask = np.array(Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_logo.png'))
+        my_mask = 'fab fa-facebook'
         words = 1000
 
-    wordcloud = WordCloud(stopwords=stopwords, mask=my_mask, contour_width=3,
-                          contour_color='black', background_color="white", max_words=words).generate(all_headlines)
-    wordcloud.to_file(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
+    #wordcloud = WordCloud(stopwords=stopwords, mask=my_mask, contour_width=3,
+                          #contour_color='black', background_color="white", max_words=words).generate(all_headlines)
+    #wordcloud.to_file(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
 
+    stylecloud.gen_stylecloud(all_headlines,icon_name=my_mask, output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg', custom_stopwords=stopwords)
 
     im = Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
     data = io.BytesIO()
@@ -69,8 +71,8 @@ def circular_graphic(tweets):
     @return:
     """
 
-    labels=[]
-    colors=[]
+    labels = []
+    colors = []
 
     data = tweets['Label'].value_counts()
     for i in data.index:
@@ -79,18 +81,17 @@ def circular_graphic(tweets):
             colors.append('lightgreen')
         elif i == 'Negative':
             colors.append('lightcoral')
-        else:
-            colors.append('ligthblue')
+        elif i == 'Neutral':
+            colors.append('lightblue')
 
     plt.figure()
-    plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f')
+    plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f%%')
     plt.legend()
     plt.axis('equal')
     plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\circular_graph.svg', transparent=False)
 
     del data
     del labels
-
 
 
 def excel(dframe):
@@ -142,6 +143,7 @@ def predict():
     en el backend, los recupera y los envía al front
     :return:
     """
+
     # TODO: comprobar si existe usuario
     if flask.request.method == 'POST':
         # For rendering results on HTML GUI
@@ -158,6 +160,7 @@ def predict():
                     input_number = int(request.form['number'])
                 input_date_start = request.form['start']
                 input_date_end = request.form['end']
+
 
             prediction, texts, inform = tt.main(input_text, input_number, input_date_start, input_date_end)
 
@@ -192,6 +195,7 @@ def downloadFile():
     """
     path = "Result_df/df_postss.xlsx"
     return send_file(path, as_attachment=True)
+
 
 
 if __name__ == "__main__":

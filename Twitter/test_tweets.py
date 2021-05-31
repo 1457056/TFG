@@ -1,17 +1,12 @@
 import json
 import time
 
-import test_texts as tp
-import pickle
+import webpage as web
 import tweepy as tw
 import pandas as pd
-import process_texts as pt
-import matplotlib.pyplot as plt
+
 import prepare_out_texts as pot
-from PIL import Image
-import io
-from os import remove
-import base64
+
 
 # initialize api instance
 # Defining keys to access the Twitter API
@@ -59,6 +54,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
                 new_num=rest
             count = new_num + count
             if '@' in search_keyword:
+
                 tweets_fetched = api.user_timeline(screen_name=search_keyword, since=start_date,
                                                    until=end_date,count=new_num,include_rts=False)
                 for status in tweets_fetched:
