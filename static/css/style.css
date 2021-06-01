@@ -134,7 +134,7 @@ th, td {
     width: 75% !important;
 }
 
-.wordcloud {
+.wordcloud, .dashboards {
     text-align: center;
 }
 

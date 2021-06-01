@@ -130,9 +130,10 @@ th, td {
     text-align: right;
 }
 
-.wordc{
+.wordc, .graph{
     width: 75%!important;
 }
+
 
 .wordcloud{
     text-align: center;

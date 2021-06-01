@@ -1,3 +1,7 @@
+import copy
+
+import cv2
+import imutils
 from flask import Flask, render_template, request, send_from_directory, current_app, send_file
 import flask
 import matplotlib
@@ -5,6 +9,7 @@ import nltk
 from nltk.corpus import stopwords
 import seaborn as sns
 import prepare_out_texts as pot
+
 sns.set()
 import stylecloud
 
@@ -26,13 +31,13 @@ with open(r"D:\UAB\Uni\TFG\def_TFG\static\stopwords_sp", "r") as f:
 def wordcloud_texts(texts, type):
     """
     Metodo para crear el wordcloud
+    Si es para Twitter se crea normal, con los tweets obtenidos
+    Si es para facebook se recorren los comentarios de cada post, creando un wordcloud para cada uno de ellos
     :param texts:
     :return:
     """
     stopwords = (['AT_USER', 'https', 'RT', 'de', 'la', 'con', 'por', 'en', 'una', 'que', 'q', 'y', 'el', 'lo', 'se',
                   'a', 'un', 't', 'co', 'así'] + stop_words_sp + stopw_sp + stop_words_en)
-
-
 
     if type == 'tw':
         words = 2000
@@ -46,6 +51,8 @@ def wordcloud_texts(texts, type):
         my_mask = 'fab fa-facebook'
         words = 1000
 
+        #Prepare data
+
         index_texts = texts
         index_texts = pot.top_texts(index_texts)
         texts = texts.sort_values('Rate')
@@ -53,32 +60,41 @@ def wordcloud_texts(texts, type):
         index_texts.reset_index(level=0, inplace=True)
 
         for index, id in enumerate(index_texts['Id']):
-            id=index_texts['Id'][index]
-            filter_comments = texts['Comments'][texts['Id']==id]
+            id = index_texts['Id'][index]
+            filter_comments = texts['Comments'][texts['Id'] == id]
             filter_comments = filter_comments[:-1]
 
             all_headlines_fb = ' '.join(filter_comments.str.lower())
 
-            if len(filter_comments)==0:
-                all_headlines_fb ='No hay comentarios'
-            stylecloud.gen_stylecloud(all_headlines_fb, icon_name=my_mask,
-                                      output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\wordclouds\wordcloud'+str(index)+'.jpg',
-                                      custom_stopwords=stopwords,
-                                      collocations=False)
+
+            #SI no hay suficientes comentarios mostramos NOT ENOUGH DATA
+            if len(filter_comments) <= 7:
+                output_name = r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\wordclouds\wordcloud' + str(
+                    index) + '.jpg'
+                img_src = cv2.imread(r'D:\UAB\Uni\TFG\def_TFG\static\images\not_data.png')
+
+                cv2.imwrite(output_name, img_src)
+
+            else:
+                stylecloud.gen_stylecloud(all_headlines_fb, icon_name=my_mask,
+                                          output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\wordclouds\wordcloud' + str(
+                                              index) + '.jpg',
+                                          custom_stopwords=stopwords,
+                                          collocations=False)
 
     # wordcloud = WordCloud(stopwords=stopwords, mask=my_mask, contour_width=3,
     # contour_color='black', background_color="white", max_words=words).generate(all_headlines)
     # wordcloud.to_file(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
 
 
-def circular_graphic(texts,type):
+def circular_graphic(texts, type):
     """
     Metodo que crea el gráfico de pastel
+    Si es para Twitter se crea normal, con los tweets obtenidos
+    Si es para facebook se recorren los comentarios de cada post, creando un grafico para cada uno de ellos
     @param tweets:
     @return:
     """
-
-
 
     if type == 'tw':
         labels = []
@@ -111,7 +127,7 @@ def circular_graphic(texts,type):
         texts.reset_index(level=0, inplace=True)
         index_texts.reset_index(level=0, inplace=True)
 
-        for index,id in enumerate(index_texts['Id']):
+        for index, id in enumerate(index_texts['Id']):
             labels = []
             colors = []
 
@@ -119,6 +135,7 @@ def circular_graphic(texts,type):
             filter_comments_label = texts['Comments label'][texts['Id'] == id]
             filter_comments_label = filter_comments_label[:-1]
             data = filter_comments_label.value_counts()
+
 
             for i in data.index:
                 labels.append(i)
@@ -129,11 +146,19 @@ def circular_graphic(texts,type):
                 elif i == 'Neutral':
                     colors.append('lightblue')
 
-            plt.figure()
-            plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f%%')
-            plt.legend()
-            plt.axis('equal')
-            plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\graphics\circular_graph'+str(index)+'.svg', transparent=False)
+            if len(labels) == 0:
+                output_name = r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\graphics\circular_graph' + str(index) + '.jpg'
+                img_src = cv2.imread(r'D:\UAB\Uni\TFG\def_TFG\static\images\nocomments.png')
+
+                cv2.imwrite(output_name, img_src)
+
+            else:
+                plt.figure()
+                plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f%%')
+                plt.legend()
+                plt.axis('equal')
+                plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\graphics\circular_graph' + str(index) + '.jpg',
+                            transparent=False)
 
             del data
             del labels
@@ -209,7 +234,7 @@ def predict():
 
             excel(texts)
             wordcloud_texts(texts, 'tw')
-            circular_graphic(texts,'tw')
+            circular_graphic(texts, 'tw')
 
             return render_template('/base/predict.html', prediction_text=prediction['data'])
 
@@ -223,7 +248,7 @@ def predict():
             prediction, texts, inform = tf.main(input_text, input_number)
             excel(inform)
             wordcloud_texts(texts, 'fb')
-            circular_graphic(texts,'fb')
+            circular_graphic(texts, 'fb')
 
             return render_template('/base/predict_fb.html', prediction_text=prediction['data'])
 

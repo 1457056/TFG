@@ -2,14 +2,14 @@ import json
 import pickle
 
 import pandas as pd
-from facebook_scraper import get_posts
+from facebook_scraper import get_posts,get_profile
 import prepare_out_texts as pot
 import _pickle as cPickle
 
 def buldTestSet(search_term, num):
      return [{"text": status['text'], "label": None, "likes": status['likes'], 'comments': status['comments_full'],
              'id': '2F' + status['post_id']} for status in
-            get_posts(search_term, pages=num, options={"comments": True, "reactors": True})]
+            get_posts(search_term, pages=num, options={"comments": True},extra_info=True)]
 
 
 def df_to_json(df_tweets):
