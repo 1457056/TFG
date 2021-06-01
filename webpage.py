@@ -9,6 +9,7 @@ import nltk
 from nltk.corpus import stopwords
 import seaborn as sns
 import prepare_out_texts as pot
+from stop_words import get_stop_words
 
 sns.set()
 import stylecloud
@@ -16,6 +17,8 @@ import stylecloud
 nltk.download('stopwords')
 stop_words_sp = list(stopwords.words('spanish'))
 stop_words_en = list(stopwords.words('english'))
+stop_words_ca = get_stop_words('catalan')
+stop_words_spa = get_stop_words('spanish')
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
@@ -27,6 +30,9 @@ app = Flask(__name__)
 with open(r"D:\UAB\Uni\TFG\def_TFG\static\stopwords_sp", "r") as f:
     stopw_sp = [line.strip() for line in f]
 
+with open(r"D:\UAB\Uni\TFG\def_TFG\static\stopwords-ca.txt", "r") as f:
+    stopw_ca = [line.strip() for line in f]
+
 
 def wordcloud_texts(texts, type):
     """
@@ -36,22 +42,22 @@ def wordcloud_texts(texts, type):
     :param texts:
     :return:
     """
+
     stopwords = (['AT_USER', 'https', 'RT', 'de', 'la', 'con', 'por', 'en', 'una', 'que', 'q', 'y', 'el', 'lo', 'se',
-                  'a', 'un', 't', 'co', 'así'] + stop_words_sp + stopw_sp + stop_words_en)
+                  'a', 'un', 't', 'co', 'así','què','mes','més','perque','són','fet','lis',] + stop_words_sp + stopw_sp + stop_words_en + stopw_ca + stop_words_ca + stop_words_spa)
 
     if type == 'tw':
-        words = 2000
         my_mask = 'fas fa-cloud'
         all_headlines_tw = ' '.join(texts['Tweet'].str.lower())
         stylecloud.gen_stylecloud(all_headlines_tw, icon_name=my_mask,
                                   output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\wordcloud.jpg',
                                   custom_stopwords=stopwords,
-                                  collocations=False)
+                                  collocations=False,
+                                  max_words=1000)
     else:
         my_mask = 'fab fa-facebook'
-        words = 1000
 
-        #Prepare data
+        # Prepare data
 
         index_texts = texts
         index_texts = pot.top_texts(index_texts)
@@ -66,8 +72,7 @@ def wordcloud_texts(texts, type):
 
             all_headlines_fb = ' '.join(filter_comments.str.lower())
 
-
-            #SI no hay suficientes comentarios mostramos NOT ENOUGH DATA
+            # SI no hay suficientes comentarios mostramos NOT ENOUGH DATA
             if len(filter_comments) <= 7:
                 output_name = r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\wordclouds\wordcloud' + str(
                     index) + '.jpg'
@@ -80,7 +85,9 @@ def wordcloud_texts(texts, type):
                                           output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\wordclouds\wordcloud' + str(
                                               index) + '.jpg',
                                           custom_stopwords=stopwords,
-                                          collocations=False)
+                                          collocations=False,
+                                          max_words=1000
+                                          )
 
     # wordcloud = WordCloud(stopwords=stopwords, mask=my_mask, contour_width=3,
     # contour_color='black', background_color="white", max_words=words).generate(all_headlines)
@@ -113,7 +120,7 @@ def circular_graphic(texts, type):
 
         plt.figure()
         plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f%%')
-        plt.legend()
+        plt.legend(loc="best")
         plt.axis('equal')
         plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\circular_graph.svg',
                     transparent=False)
@@ -136,7 +143,6 @@ def circular_graphic(texts, type):
             filter_comments_label = filter_comments_label[:-1]
             data = filter_comments_label.value_counts()
 
-
             for i in data.index:
                 labels.append(i)
                 if i == 'Positive':
@@ -147,7 +153,8 @@ def circular_graphic(texts, type):
                     colors.append('lightblue')
 
             if len(labels) == 0:
-                output_name = r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\graphics\circular_graph' + str(index) + '.jpg'
+                output_name = r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\graphics\circular_graph' + str(
+                    index) + '.jpg'
                 img_src = cv2.imread(r'D:\UAB\Uni\TFG\def_TFG\static\images\nocomments.png')
 
                 cv2.imwrite(output_name, img_src)
@@ -155,10 +162,11 @@ def circular_graphic(texts, type):
             else:
                 plt.figure()
                 plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f%%')
-                plt.legend()
+                plt.legend(loc="best")
                 plt.axis('equal')
-                plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\graphics\circular_graph' + str(index) + '.jpg',
-                            transparent=False)
+                plt.savefig(
+                    r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\graphics\circular_graph' + str(index) + '.jpg',
+                    transparent=False)
 
             del data
             del labels
