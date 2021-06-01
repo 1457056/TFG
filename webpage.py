@@ -1,21 +1,10 @@
-import datetime
-import time
-from os import remove
-import numpy as np
-from wordcloud import WordCloud, ImageColorGenerator
 from flask import Flask, render_template, request, send_from_directory, current_app, send_file
 import flask
-from PIL import Image
-import io
-import base64
 import matplotlib
 import nltk
 from nltk.corpus import stopwords
-from datetime import datetime
 import seaborn as sns
-import pandas as pd
 import prepare_out_texts as pot
-
 sns.set()
 import stylecloud
 
@@ -50,8 +39,9 @@ def wordcloud_texts(texts, type):
         my_mask = 'fas fa-cloud'
         all_headlines_tw = ' '.join(texts['Tweet'].str.lower())
         stylecloud.gen_stylecloud(all_headlines_tw, icon_name=my_mask,
-                                  output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg',
-                                  custom_stopwords=stopwords)
+                                  output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\wordcloud.jpg',
+                                  custom_stopwords=stopwords,
+                                  collocations=False)
     else:
         my_mask = 'fab fa-facebook'
         words = 1000
@@ -72,8 +62,9 @@ def wordcloud_texts(texts, type):
             if len(filter_comments)==0:
                 all_headlines_fb ='No hay comentarios'
             stylecloud.gen_stylecloud(all_headlines_fb, icon_name=my_mask,
-                                      output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\wordclouds\wordcloud'+str(index)+'.jpg',
-                                      custom_stopwords=stopwords)
+                                      output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\wordclouds\wordcloud'+str(index)+'.jpg',
+                                      custom_stopwords=stopwords,
+                                      collocations=False)
 
     # wordcloud = WordCloud(stopwords=stopwords, mask=my_mask, contour_width=3,
     # contour_color='black', background_color="white", max_words=words).generate(all_headlines)
@@ -90,8 +81,29 @@ def circular_graphic(texts,type):
 
 
     if type == 'tw':
+        labels = []
+        colors = []
+
         data = texts['Label'].value_counts()
 
+        for i in data.index:
+            labels.append(i)
+            if i == 'Positive':
+                colors.append('lightgreen')
+            elif i == 'Negative':
+                colors.append('lightcoral')
+            elif i == 'Neutral':
+                colors.append('lightblue')
+
+        plt.figure()
+        plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f%%')
+        plt.legend()
+        plt.axis('equal')
+        plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\circular_graph.svg',
+                    transparent=False)
+
+        del data
+        del labels
     else:
         index_texts = texts
         index_texts = pot.top_texts(index_texts)
@@ -121,7 +133,7 @@ def circular_graphic(texts,type):
             plt.pie(data, colors=colors, labels=labels, shadow=True, autopct='%.2f%%')
             plt.legend()
             plt.axis('equal')
-            plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\graphics\circular_graph'+str(index)+'.svg', transparent=False)
+            plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\fb_images\graphics\circular_graph'+str(index)+'.svg', transparent=False)
 
             del data
             del labels
