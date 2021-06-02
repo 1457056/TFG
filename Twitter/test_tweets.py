@@ -1,6 +1,7 @@
 import json
+import pickle
 import time
-
+import _pickle as cPickle
 import webpage as web
 import tweepy as tw
 import pandas as pd
@@ -39,6 +40,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
     """
     test_data = []
     API_LIMIT = 900
+    type_req=""
     try:
         api = getApi()
         new_num = num
@@ -54,17 +56,18 @@ def buildTestSet(search_keyword, num, start_date, end_date):
                 new_num=rest
             count = new_num + count
             if '@' in search_keyword:
-
+                type_req='user'
                 tweets_fetched = api.user_timeline(screen_name=search_keyword, since=start_date,
                                                    until=end_date,count=new_num,include_rts=False)
                 for status in tweets_fetched:
-                    test_data.append({"text": status.text, "label": None,'id':status.id})
+                    test_data.append({"text": status.text, "label": None,'id':status.id,"date":str(status.created_at)})
                     since_id = status.id
             else:
+                type_req = 'word'
                 tweets_fetched = tw.Cursor(api.search, search_keyword+'-filter:retweets', since=start_date,
                                            until=end_date,since_id=since_id, include_rts=False).items(new_num)
                 for status in tweets_fetched:
-                    test_data.append({"text": status.text, "label": None,'id':status.id})
+                    test_data.append({"text": status.text, "label": None,'id':status.id,"date":str(status.created_at)})
                     since_id = status.id
 
 
@@ -74,7 +77,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
                 next = False
             elif count == API_LIMIT:
                 time.sleep(900)
-        return test_data
+        return test_data,type_req
     except:
         print("Unfortunately, something went wrong..")
         return None
@@ -82,7 +85,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
 
 # ------------------------------------------------------------------------
 
-data_classified = pd.DataFrame(columns=['Id','Tweet', 'Label', 'Rate','Comments'])
+data_classified = pd.DataFrame(columns=['Id','Tweet', 'Label', 'Rate','Comments','Date'])
 
 
 def df_to_json(df_tweets):
@@ -100,8 +103,15 @@ def df_to_json(df_tweets):
 
 
 def main(search_term, num, start, end):
-    testDataSet = buildTestSet(search_term, num, start, end)
+    testDataSet,type_req = buildTestSet(search_term, num, start, end)
+
+    #with open('Training results/dataset_tw.pkl', 'wb') as fp:
+     #   cPickle.dump((testDataSet), fp, -1)
+
+    #with open('Training results/dataset_tw.pkl', 'rb') as f:
+    #    testDataSet = pickle.load(f)
+
     result_df,inform = pot.build_result_df(testDataSet, data_classified,None,'tw')
     max_tweets = pot.top_texts(result_df)
     result_json = df_to_json(max_tweets)
-    return (result_json, result_df,inform)
+    return (result_json, result_df,inform,type_req)

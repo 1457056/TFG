@@ -7,7 +7,7 @@ import prepare_out_texts as pot
 import _pickle as cPickle
 
 def buldTestSet(search_term, num):
-     return [{"text": status['text'], "label": None, "likes": status['likes'], 'comments': status['comments_full'],
+     return [{"text": status['text'], "label": None, "likes": status['likes'], 'comments': status['comments_full'], 'date':None,
              'id': '2F' + status['post_id']} for status in
             get_posts(search_term, pages=num, options={"comments": True},extra_info=True)]
 
@@ -25,14 +25,14 @@ def df_to_json(df_tweets):
     return result
 
 
-data_classified = pd.DataFrame(columns=['Id', 'Tweet', 'Label', 'Rate', 'Comments','Comments rate'])
+data_classified = pd.DataFrame(columns=['Id', 'Tweet', 'Label', 'Rate', 'Comments','Comments rate','Date'])
 data_classified_comments = pd.DataFrame(columns=['label'])
 
 
 def main(search_term, num):
     testDataSet = buldTestSet(search_term, num)
     #with open('Training results/dataset.pkl', 'wb') as fp:
-     #   cPickle.dump((testDataSet), fp, -1)
+        #cPickle.dump((testDataSet), fp, -1)
 
 
     #with open('Training results/dataset.pkl', 'rb') as f:

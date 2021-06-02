@@ -2,6 +2,7 @@ import copy
 
 import cv2
 import imutils
+from django.http import HttpResponse
 from flask import Flask, render_template, request, send_from_directory, current_app, send_file
 import flask
 import matplotlib
@@ -10,6 +11,7 @@ from nltk.corpus import stopwords
 import seaborn as sns
 import prepare_out_texts as pot
 from stop_words import get_stop_words
+import pdfkit as pdfkit
 
 sns.set()
 import stylecloud
@@ -34,7 +36,7 @@ with open(r"D:\UAB\Uni\TFG\def_TFG\static\stopwords-ca.txt", "r") as f:
     stopw_ca = [line.strip() for line in f]
 
 
-def wordcloud_texts(texts, type):
+def wordcloud_texts(texts, type, type_req_tw):
     """
     Metodo para crear el wordcloud
     Si es para Twitter se crea normal, con los tweets obtenidos
@@ -44,16 +46,29 @@ def wordcloud_texts(texts, type):
     """
 
     stopwords = (['AT_USER', 'https', 'RT', 'de', 'la', 'con', 'por', 'en', 'una', 'que', 'q', 'y', 'el', 'lo', 'se',
-                  'a', 'un', 't', 'co', 'así','què','mes','més','perque','són','fet','lis',] + stop_words_sp + stopw_sp + stop_words_en + stopw_ca + stop_words_ca + stop_words_spa)
+                  'a', 'un', 't', 'co', 'así', 'què', 'mes', 'més', 'perque', 'són', 'fet',
+                  'lis', ] + stop_words_sp + stopw_sp + stop_words_en + stopw_ca + stop_words_ca + stop_words_spa)
 
     if type == 'tw':
-        my_mask = 'fas fa-cloud'
-        all_headlines_tw = ' '.join(texts['Tweet'].str.lower())
-        stylecloud.gen_stylecloud(all_headlines_tw, icon_name=my_mask,
-                                  output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\wordcloud.jpg',
-                                  custom_stopwords=stopwords,
-                                  collocations=False,
-                                  max_words=1000)
+        if type_req_tw != 'user':
+            my_mask = 'fas fa-cloud'
+            all_headlines_tw = ' '.join(texts['Tweet'].str.lower())
+            stylecloud.gen_stylecloud(all_headlines_tw, icon_name=my_mask,
+                                      output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\wordcloud.jpg',
+                                      custom_stopwords=stopwords,
+                                      collocations=False,
+                                      max_words=1000)
+        else:
+            texts.sort_values('Date')
+            plt.figure()
+            data = texts['Date'].value_counts()
+            data=data.sort_index()
+            data = data.iloc[0:5]
+            plt.bar(data.index,data)
+            plt.xticks( rotation=90)
+            plt.subplots_adjust(bottom=0.2, top=0.98)
+            plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\wordcloud.jpg')
+
     else:
         my_mask = 'fab fa-facebook'
 
@@ -238,13 +253,13 @@ def predict():
                 input_date_start = request.form['start']
                 input_date_end = request.form['end']
 
-            prediction, texts, inform = tt.main(input_text, input_number, input_date_start, input_date_end)
+            prediction, texts, inform, type_req = tt.main(input_text, input_number, input_date_start, input_date_end)
 
             excel(texts)
-            wordcloud_texts(texts, 'tw')
+            wordcloud_texts(texts, 'tw', type_req)
             circular_graphic(texts, 'tw')
 
-            return render_template('/base/predict.html', prediction_text=prediction['data'])
+            return render_template('/base/predict.html', prediction_text=prediction['data'],type=type_req)
 
 
         elif 'facebook' in request.form:
@@ -255,7 +270,7 @@ def predict():
 
             prediction, texts, inform = tf.main(input_text, input_number)
             excel(inform)
-            wordcloud_texts(texts, 'fb')
+            wordcloud_texts(texts, 'fb', None)
             circular_graphic(texts, 'fb')
 
             return render_template('/base/predict_fb.html', prediction_text=prediction['data'])
@@ -270,6 +285,25 @@ def downloadFile():
     path = "Result_df/df_postss.xlsx"
     return send_file(path, as_attachment=True)
 
+
+@app.route('/download_pdf')
+def downloadPDF():
+    from xhtml2pdf import pisa
+    import io as StringIO
+    from django.template.loader import get_template
+    from django.template import Context
+    from django.conf import settings
+    settings.configure()
+
+    template = get_template("/base/predict_fb.html")
+    context = Context({'pagesize': 'A4'})
+    html = template.render(context)
+    result = StringIO.StringIO()
+    pdf = pisa.pisaDocument(StringIO.StringIO(html), dest=result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    else:
+        return HttpResponse('Errors')
 
 if __name__ == "__main__":
     app.run(debug=True)

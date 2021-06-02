@@ -89,20 +89,22 @@
                         </tr>
                         <tr>
                             <th scope="row">Comentarios positivos</th>
-                            <td>{{item[9]}}%</td>
+                            <td>{{item[10]}}%</td>
                         </tr>
                         <tr>
                             <th scope="row">Comentarios negativos</th>
-                            <td>{{item[7]}}%</td>
+                            <td>{{item[8]}}%</td>
 
                         </tr>
                         <tr>
                             <th scope="row">Comentarios neutros</th>
-                            <td>{{item[8]}}%</td>
+                            <td>{{item[9]}}%</td>
                         </tr>
                         </tbody>
                     </table>
-                    <button id="buttonBF_dash" class="btn btn-secondary" onclick="changeFB('{{loop.index}}')">Analizar comentarios</button>
+                    <button id="buttonBF_dash" class="btn btn-secondary" onclick="changeFB('{{loop.index}}')">Analizar
+                        comentarios
+                    </button>
                 </div>
 
             </div>
@@ -113,7 +115,8 @@
         <div class="col-6">
             <div class="card">
                 <div class="dashboards">
-                    <img id= "image_graph" src="static/images/fb_images/graphics/circular_graph0.jpg" class=" graph card-img-top">
+                    <img id="image_graph" src="static/images/fb_images/graphics/circular_graph0.jpg"
+                         class=" graph card-img-top">
                     <div class="card-body">
                         <p class="card-text">Porcentage de polaridad sobre el conjunto de posts</p>
                     </div>
@@ -123,7 +126,8 @@
         <div class="col-6">
             <div class="card">
                 <div class="wordcloud">
-                    <img id="image_wordcloud" src="static/images/fb_images/wordclouds/wordcloud0.jpg" class="wordc card-img-top">
+                    <img id="image_wordcloud" src="static/images/fb_images/wordclouds/wordcloud0.jpg"
+                         class="wordc card-img-top">
                 </div>
                 <div class="card-body">
                     <p class="card-text">Palabras más incluidas en el conjunto de posts</p>
@@ -140,8 +144,10 @@
                     Descargar
                 </button>
                 <div class="dropdown-menu mb-5" aria-labelledby="dropdownMenu2">
-                    <button id="download" class="dropdown-item"> Descargar PDF
-                    </button>
+                    <a href="{{ url_for('.downloadPDF') }}">
+                        <button id="download" class="dropdown-item"> Descargar PDF
+                        </button>
+                    </a>
                     <a href="{{ url_for('.downloadFile') }}">
                         <button class="dropdown-item"> Descargar informe</button>
                     </a>

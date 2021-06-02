@@ -107,9 +107,15 @@
         </div>
         <div class="col-6">
             <div class="card">
+                {% if type == "user" %}
+                <div class="wordcloud">
+                    <img src="/static/images/tw_images/wordcloud.jpg" class="card-img-top">
+                </div>
+                {% else %}
                 <div class="wordcloud">
                     <img src="/static/images/tw_images/wordcloud.jpg" class="wordc card-img-top">
                 </div>
+                {% endif %}
                 <div class="card-body">
                     <p class="card-text">Palabras más incluidas en el conjunto de tweets</p>
                 </div>

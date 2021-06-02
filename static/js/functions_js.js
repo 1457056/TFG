@@ -3,7 +3,7 @@ isOn2 = true
 document.addEventListener("DOMContentLoaded", () => {
     // Escuchamos el click del botón
 // Escuchamos el click del botón
-    $('#download').on("click", () => {
+  /*  $('#download').on("click", () => {
         const $elementoParaConvertir = document.body; // <-- Aquí puedes elegir cualquier elemento del DOM
         html2pdf()
             .set({
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .from($elementoParaConvertir)
             .save()
             .catch(err => console.log(err));
-    });
+    });*/
     $('#flexCheckDefault').on("click", () => {
 
         if (isOn === true) {

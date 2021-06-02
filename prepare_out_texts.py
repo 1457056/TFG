@@ -17,6 +17,7 @@ def build_result_df(testDataSet, data_classified, data_comments,rrss):
     :return: data_classified
     """
 
+
     for text in testDataSet:
         p = tp.naive_bayes_predict(text['text'], logprior, loglikelihood)
         print(f'{text["text"]} -> {p:.2f}')
@@ -36,7 +37,8 @@ def build_result_df(testDataSet, data_classified, data_comments,rrss):
             'Neu_com': get_neu(data_comments),
             'Comments': "",
             'Comments rate': "",
-            'Comments label': ""
+            'Comments label': "",
+            'Date': text['date']
         }, ignore_index=True)
         try:
             for comment in text['comments']:
@@ -52,7 +54,7 @@ def build_result_df(testDataSet, data_classified, data_comments,rrss):
         except:
             continue
 
-
+    data_classified['Date']=data_classified['Date'].str.replace(r'(?:(\s)(\d*)((\:)(\d*))*)','', case=False, regex=True)
     data_classified['Comments'] = data_classified['Comments'].shift(periods=-1)
     data_classified['Comments rate'] = data_classified['Comments rate'].shift(periods=-1)
     data_classified['Comments label'] = data_classified['Comments label'].shift(periods=-1)
