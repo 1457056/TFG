@@ -2,8 +2,10 @@ import copy
 
 import cv2
 import imutils
+from django.conf import settings
 from django.http import HttpResponse
-from flask import Flask, render_template, request, send_from_directory, current_app, send_file
+from flask import Flask, render_template, request, send_from_directory, current_app, send_file, make_response
+
 import flask
 import matplotlib
 import nltk
@@ -25,7 +27,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # Initialize the flask App
-
 
 app = Flask(__name__)
 
@@ -62,10 +63,10 @@ def wordcloud_texts(texts, type, type_req_tw):
             texts.sort_values('Date')
             plt.figure()
             data = texts['Date'].value_counts()
-            data=data.sort_index()
+            data = data.sort_index()
             data = data.iloc[0:5]
-            plt.bar(data.index,data)
-            plt.xticks( rotation=90)
+            plt.bar(data.index, data)
+            plt.xticks(rotation=90)
             plt.subplots_adjust(bottom=0.2, top=0.98)
             plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\wordcloud.jpg')
 
@@ -253,13 +254,20 @@ def predict():
                 input_date_start = request.form['start']
                 input_date_end = request.form['end']
 
-            prediction, texts, inform, type_req = tt.main(input_text, input_number, input_date_start, input_date_end)
+            comments = False
+            prediction, texts, type_req = tt.main(input_text, input_number, input_date_start, input_date_end, comments)
 
+            texts = texts.drop(['Comments', 'Comments label', 'Comments rate', 'Neg_com', 'Neu_com', 'Pos_com'], axis=1)
             excel(texts)
             wordcloud_texts(texts, 'tw', type_req)
             circular_graphic(texts, 'tw')
 
-            return render_template('/base/predict.html', prediction_text=prediction['data'],type=type_req)
+            if 'PDF' in request.form:
+                template = 'child/table.html'
+            else:
+                template = 'child/cards.html'
+
+            return render_template(template, prediction_text=prediction['data'], type=type_req)
 
 
         elif 'facebook' in request.form:
@@ -268,12 +276,12 @@ def predict():
             if 'number' in request.form:
                 input_number = int(request.form['number'])
 
-            prediction, texts, inform = tf.main(input_text, input_number)
-            excel(inform)
+            prediction, texts = tf.main(input_text, input_number)
+            excel(texts)
             wordcloud_texts(texts, 'fb', None)
             circular_graphic(texts, 'fb')
 
-            return render_template('/base/predict_fb.html', prediction_text=prediction['data'])
+            return render_template('/predict_fb.html', prediction_text=prediction['data'])
 
 
 @app.route('/download_info')
@@ -288,22 +296,19 @@ def downloadFile():
 
 @app.route('/download_pdf')
 def downloadPDF():
-    from xhtml2pdf import pisa
-    import io as StringIO
-    from django.template.loader import get_template
-    from django.template import Context
-    from django.conf import settings
-    settings.configure()
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    options = {'enable-local-file-access': None}
 
-    template = get_template("/base/predict_fb.html")
-    context = Context({'pagesize': 'A4'})
-    html = template.render(context)
-    result = StringIO.StringIO()
-    pdf = pisa.pisaDocument(StringIO.StringIO(html), dest=result)
-    if not pdf.err:
-        return HttpResponse(result.getvalue(), content_type='application/pdf')
-    else:
-        return HttpResponse('Errors')
+    css = r'D:\UAB\Uni\TFG\def_TFG\static\css\style.css'
+    rendered = render_template('predict_fb.html')
+    pdf = pdfkit.from_string(rendered, False, configuration=config, options=options, css=css)
+
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+
+    return response
+
 
 if __name__ == "__main__":
     app.run(debug=True)

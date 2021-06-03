@@ -1,4 +1,4 @@
-{% extends "/base/webpage.html" %}
+{% extends "/webpage.html" %}
 {%block form%}
 <div class="formulari mt-5 ">
     <h5> {{text}}</h5>
@@ -8,26 +8,26 @@
         <input type="text" name="word" placeholder="@usuario" required
                oninvalid="this.setCustomValidity('Ingresa un usuario del formato: @usuario')"
                pattern="@([A-Za-z0-9_]{1,15})">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault">
-                Opciones avanzadas de búsqueda
-            </label>
-        </div>
+
         {% else %}
         <input type="text" name="word" placeholder="Introduce texto" required="required">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault">
-                Opciones avanzadas de búsqueda
-            </label>
-        </div>
 
         {% endif %}
         <div id="dates" class="row_date mt-1">
 
         </div>
 
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                Opciones avanzadas de búsqueda
+            </label>
+            </br>
+            <input class="form-check-input" type="checkbox" name="PDF">
+            <label class="form-check-label" for="flexCheckDefault">
+                Versión PDF
+            </label>
+        </div>
         <button type="submit" name="twitter" class="btn btn-outline-primary mt-1">Predecir</button>
     </form>
 

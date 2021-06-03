@@ -1,5 +1,6 @@
 import json
 import pickle
+import sys
 import time
 import _pickle as cPickle
 import webpage as web
@@ -7,7 +8,6 @@ import tweepy as tw
 import pandas as pd
 
 import prepare_out_texts as pot
-
 
 # initialize api instance
 # Defining keys to access the Twitter API
@@ -29,7 +29,7 @@ def getApi():
 
 
 # Run this cell to test your function
-def buildTestSet(search_keyword, num, start_date, end_date):
+def buildTestSet(search_keyword, num, start_date, end_date, comments):
     """
     Método que utiliza la API de Twitter para descargar un conjunto de tweets a analizar
     :param search_keyword:
@@ -39,37 +39,59 @@ def buildTestSet(search_keyword, num, start_date, end_date):
     :return:
     """
     test_data = []
+    replies = []
     API_LIMIT = 900
-    type_req=""
+    type_req = ""
     try:
         api = getApi()
         new_num = num
         next = True
         rest = num
         count = 0
-        since_id=''
+        since_id = ''
 
         while next:
             if new_num > 900:
                 new_num = API_LIMIT
             else:
-                new_num=rest
+                new_num = rest
             count = new_num + count
+
             if '@' in search_keyword:
-                type_req='user'
-                tweets_fetched = api.user_timeline(screen_name=search_keyword, since=start_date,
-                                                   until=end_date,count=new_num,include_rts=False)
-                for status in tweets_fetched:
-                    test_data.append({"text": status.text, "label": None,'id':status.id,"date":str(status.created_at)})
-                    since_id = status.id
+                type_req = 'user'
+                if comments:
+                    replies = []
+                    for status in tw.Cursor(api.user_timeline, screen_name=search_keyword, since=start_date,
+                                            until=end_date, include_rts=False).items(num):
+                        test_data.append(
+                            {"text": status.text, "label": None, 'id': status.id, "date": str(status.created_at)})
+                        since_id = status.id
+                        print(status.text)
+                        for tweet in tw.Cursor(api.user_timeline, screen_name=search_keyword, since=start_date,
+                                                until=end_date, include_rts=False).items(30):
+                            since_id = tweet.id
+                            if hasattr(tweet, 'in_reply_to_status_id_str'):
+                                if (tweet.in_reply_to_status_id_str == status.id_str):
+                                    print(tweet.text)
+                                    replies.append({'reply_text': tweet.text, 'reply_id': tweet.id})
+
+
+                else:
+                    tweets_fetched = api.user_timeline(screen_name=search_keyword, since=start_date,
+                                                       until=end_date, count=new_num, include_rts=False)
+                    for status in tweets_fetched:
+                        test_data.append(
+                            {"text": status.text, "label": None, 'id': status.id, "date": str(status.created_at),'likes':status.favorite_count})
+                        since_id = status.id
+
             else:
                 type_req = 'word'
-                tweets_fetched = tw.Cursor(api.search, search_keyword+'-filter:retweets', since=start_date,
-                                           until=end_date,since_id=since_id, include_rts=False).items(new_num)
+                tweets_fetched = tw.Cursor(api.search, search_keyword + '-filter:retweets', since=start_date,
+                                           until=end_date, since_id=since_id, include_rts=False).items(new_num)
                 for status in tweets_fetched:
-                    test_data.append({"text": status.text, "label": None,'id':status.id,"date":str(status.created_at)})
+                    test_data.append(
+                        {"text": status.text, "label": None, 'id': status.id, "date": str(status.created_at),'likes':status.favorite_count})
                     since_id = status.id
-
 
             new_num = rest - new_num
             rest = new_num
@@ -77,7 +99,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
                 next = False
             elif count == API_LIMIT:
                 time.sleep(900)
-        return test_data,type_req
+        return test_data, type_req, replies
     except:
         print("Unfortunately, something went wrong..")
         return None
@@ -85,7 +107,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
 
 # ------------------------------------------------------------------------
 
-data_classified = pd.DataFrame(columns=['Id','Tweet', 'Label', 'Rate','Comments','Date'])
+data_classified = pd.DataFrame(columns=['Id', 'Tweet', 'Label', 'Rate', 'Comments', 'Date'])
 
 
 def df_to_json(df_tweets):
@@ -102,16 +124,16 @@ def df_to_json(df_tweets):
     return result
 
 
-def main(search_term, num, start, end):
-    testDataSet,type_req = buildTestSet(search_term, num, start, end)
+def main(search_term, num, start, end, comments):
+    testDataSet, type_req,replies = buildTestSet(search_term, num, start, end, comments)
 
-    #with open('Training results/dataset_tw.pkl', 'wb') as fp:
-     #   cPickle.dump((testDataSet), fp, -1)
+    # with open('Training results/dataset_tw.pkl', 'wb') as fp:
+    #   cPickle.dump((testDataSet), fp, -1)
 
-    #with open('Training results/dataset_tw.pkl', 'rb') as f:
+    # with open('Training results/dataset_tw.pkl', 'rb') as f:
     #    testDataSet = pickle.load(f)
 
-    result_df,inform = pot.build_result_df(testDataSet, data_classified,None,'tw')
+    result_df = pot.build_result_df(testDataSet, data_classified, None, 'tw')
     max_tweets = pot.top_texts(result_df)
     result_json = df_to_json(max_tweets)
-    return (result_json, result_df,inform,type_req)
+    return (result_json, result_df, type_req)

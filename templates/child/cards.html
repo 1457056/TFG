@@ -1,0 +1,34 @@
+{% extends "/predict.html" %}
+{%block cards%}
+<div class="card-results mt-5" id="card_tw">
+        <div class="row">
+
+            {% for item in prediction_text %}
+            <div class="col-6">
+                <div class="card-body">
+                    <blockquote class="twitter-tweet" data-conversation="none" data-lang="es" data-theme="light"
+                                width="550" height="550"><p
+                            lang="es" dir="ltr"></p>&mdash;
+                        <a href="https://twitter.com/twitter/statuses/{{item[0]}}"></a></blockquote>
+                    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                    <table class="table table-hover" id="taula_resultats">
+                        <tbody>
+                        <tr>
+                            <th scope="row">Label</th>
+                            <td>{{item[2]}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Rate</th>
+                            <td id="rate">{{item[3]}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+{% endblock %}

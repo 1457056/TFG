@@ -25,21 +25,21 @@ def df_to_json(df_tweets):
     return result
 
 
-data_classified = pd.DataFrame(columns=['Id', 'Tweet', 'Label', 'Rate', 'Comments','Comments rate','Date'])
+data_classified = pd.DataFrame(columns=['Id', 'Tweet', 'Label', 'Rate', 'Comments','Comments rate','Date','Likes'])
 data_classified_comments = pd.DataFrame(columns=['label'])
 
 
 def main(search_term, num):
     testDataSet = buldTestSet(search_term, num)
     #with open('Training results/dataset.pkl', 'wb') as fp:
-        #cPickle.dump((testDataSet), fp, -1)
+    #    cPickle.dump((testDataSet), fp, -1)
 
 
     #with open('Training results/dataset.pkl', 'rb') as f:
      #   testDataSet = pickle.load(f)
 
 
-    result_df, data_infrom = pot.build_result_df(testDataSet, data_classified, data_classified_comments,'fb')
+    result_df = pot.build_result_df(testDataSet, data_classified, data_classified_comments,'fb')
     max_posts = pot.top_texts(result_df)
     result_json = df_to_json(max_posts)
-    return (result_json, result_df, data_infrom)
+    return (result_json, result_df)

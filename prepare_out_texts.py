@@ -26,12 +26,12 @@ def build_result_df(testDataSet, data_classified, data_comments,rrss):
             data_comments = data_comments.iloc[0:0]
             data_comments = comments(text, data_comments)
 
-        # data_comments['label'] = data_comments['label'].shift(periods=-1)
         data_classified = data_classified.append({
             'Id': (text['id']),
             'Tweet': pt.remove_usernames(text['text']),
             'Label': label(p),
             'Rate': p,
+            'Likes': str(text['likes']),
             'Pos_com': get_pos(data_comments),
             'Neg_com': get_neg(data_comments),
             'Neu_com': get_neu(data_comments),
@@ -54,16 +54,16 @@ def build_result_df(testDataSet, data_classified, data_comments,rrss):
         except:
             continue
 
+    data_classified['Likes']=data_classified['Likes'].str.replace("/.[0-9]+/", "",case=False, regex=True)
     data_classified['Date']=data_classified['Date'].str.replace(r'(?:(\s)(\d*)((\:)(\d*))*)','', case=False, regex=True)
     data_classified['Comments'] = data_classified['Comments'].shift(periods=-1)
     data_classified['Comments rate'] = data_classified['Comments rate'].shift(periods=-1)
     data_classified['Comments label'] = data_classified['Comments label'].shift(periods=-1)
 
-    data_inform = data_classified
     # data_classified = data_classified.drop(['Comments'], axis=1)
     # data_classified = data_classified[data_classified['Id'].notna()]
 
-    return data_classified, data_inform
+    return data_classified
 
 
 def top_texts(result_df):

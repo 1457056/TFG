@@ -1,9 +1,10 @@
 isOn = true
 isOn2 = true
+isOn3 = true
 document.addEventListener("DOMContentLoaded", () => {
     // Escuchamos el click del botón
 // Escuchamos el click del botón
-  /*  $('#download').on("click", () => {
+    $('#download').on("click", () => {
         const $elementoParaConvertir = document.body; // <-- Aquí puedes elegir cualquier elemento del DOM
         html2pdf()
             .set({
@@ -26,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .from($elementoParaConvertir)
             .save()
             .catch(err => console.log(err));
-    });*/
+    });
     $('#flexCheckDefault').on("click", () => {
 
         if (isOn === true) {
@@ -41,16 +42,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    $('#flexCheckDefault2').on("click", () => {
+    $('#flexCheckDefault_fb').on("click", () => {
 
         if (isOn2 === true) {
 
-            $('#data').html('<input type="text" name="number" placeholder="Numero de posts" required oninvalid= ' + '"this.setCustomValidity' + "('Ingresa un número de posts a analizar')" + '"' + ' pattern="{1,25})"> '
+            $('#data').html('<input type="text" name="number" placeholder="Numero de páginas" required oninvalid= ' + '"this.setCustomValidity' + "('Ingresa un número de posts a analizar')" + '"' + ' pattern="{1,25})"> '
             );
             isOn2 = false;
         } else {
             $('#data').html('');
             isOn2 = true;
+        }
+    });
+    $('#hideTable').on("click", () => {
+
+        if ($('#table_tw').is(':visible')) {
+            console.log('hola')
+            $('#table_tw').hide();
+            $('#card_tw').show();
+        } else {
+            $('#table_tw').show();
+            $('#card_tw').hide();
         }
     });
 
@@ -71,25 +83,24 @@ document.addEventListener("DOMContentLoaded", () => {
     changeColor();
 
 
-
 });
 
 
 function changeFB(id) {
-    if (id==1) {
+    if (id == 1) {
         document.getElementById('image_graph').src = "static/images/fb_images/graphics/circular_graph0.jpg"
         document.getElementById('image_wordcloud').src = "static/images/fb_images/wordclouds/wordcloud0.jpg"
     }
 
-    if(id==2){
+    if (id == 2) {
         document.getElementById('image_graph').src = "static/images/fb_images/graphics/circular_graph1.jpg"
         document.getElementById('image_wordcloud').src = "static/images/fb_images/wordclouds/wordcloud1.jpg"
     }
-    if(id==3){
+    if (id == 3) {
         document.getElementById('image_graph').src = "static/images/fb_images/graphics/circular_graph2.jpg"
         document.getElementById('image_wordcloud').src = "static/images/fb_images/wordclouds/wordcloud2.jpg"
     }
-    if(id==4){
+    if (id == 4) {
         document.getElementById('image_graph').src = "static/images/fb_images/graphics/circular_graph3.jpg"
         document.getElementById('image_wordcloud').src = "static/images/fb_images/wordclouds/wordcloud3.jpg"
     }
