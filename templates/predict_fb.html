@@ -74,7 +74,8 @@
                                 frameborder="0"
                                 allowfullscreen="true"
                                 type="application/pdf"
-                                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+                                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                        id="iframe"></iframe>
                     </center>
 
                     <table class="table table-hover" id="taula_resultats">
@@ -145,10 +146,6 @@
                     Descargar
                 </button>
                 <div class="dropdown-menu mb-5" aria-labelledby="dropdownMenu2">
-                    <a href="{{ url_for('.downloadPDF') }}">
-                        <button id="download" class="dropdown-item"> Descargar PDF
-                        </button>
-                    </a>
                     <a href="{{ url_for('.downloadFile') }}">
                         <button class="dropdown-item"> Descargar informe</button>
                     </a>

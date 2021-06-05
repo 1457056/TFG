@@ -1,0 +1,27 @@
+{% extends "/predict.html" %}
+{%block table%}
+<table class="table table-striped mt-5" id="table_tw">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tweet</th>
+            <th scope="col">Label</th>
+            <th scope="col">Rate</th>
+            <th scope="col">Likes</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in prediction_text %}
+        <tr>
+            <th scope="row">{{loop.index}}</th>
+            <td>{{item[1]}}</td>
+            <td>{{item[2]}}</td>
+            <td>{{item[3]}}</td>
+            <td>{{item[8]}}</td>
+        </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+

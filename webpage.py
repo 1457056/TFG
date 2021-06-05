@@ -2,6 +2,8 @@ import copy
 
 import cv2
 import imutils
+import numpy as np
+from PIL import Image
 from django.conf import settings
 from django.http import HttpResponse
 from flask import Flask, render_template, request, send_from_directory, current_app, send_file, make_response
@@ -11,6 +13,8 @@ import matplotlib
 import nltk
 from nltk.corpus import stopwords
 import seaborn as sns
+from wordcloud import WordCloud
+
 import prepare_out_texts as pot
 from stop_words import get_stop_words
 import pdfkit as pdfkit
@@ -33,11 +37,35 @@ app = Flask(__name__)
 with open(r"D:\UAB\Uni\TFG\def_TFG\static\stopwords_sp", "r") as f:
     stopw_sp = [line.strip() for line in f]
 
-with open(r"D:\UAB\Uni\TFG\def_TFG\static\stopwords-ca.txt", "r") as f:
-    stopw_ca = [line.strip() for line in f]
 
 
-def wordcloud_texts(texts, type, type_req_tw):
+def neg_color_func(word=None, font_size=None,
+                   position=None, orientation=None,
+                   font_path=None, random_state=None):
+    h = 358
+    s = 100  # 0 - 100
+    l = random_state.randint(20, 70)  # 0 - 100
+    return "hsl({}, {}%, {}%)".format(h, s, l)
+
+
+def pos_color_func(word=None, font_size=None,
+                   position=None, orientation=None,
+                   font_path=None, random_state=None):
+    h = 106
+    s = 100  # 0 - 100
+    l = random_state.randint(15, 70)  # 0 - 100
+    return "hsl({}, {}%, {}%)".format(h, s, l)
+
+def neu_color_func(word=None, font_size=None,
+                   position=None, orientation=None,
+                   font_path=None, random_state=None):
+    h = 179
+    s = 100  # 0 - 100
+    l = random_state.randint(15, 70)  # 0 - 100
+    return "hsl({}, {}%, {}%)".format(h, s, l)
+
+
+def wordcloud_texts(texts, type, type_req_tw, word):
     """
     Metodo para crear el wordcloud
     Si es para Twitter se crea normal, con los tweets obtenidos
@@ -48,17 +76,65 @@ def wordcloud_texts(texts, type, type_req_tw):
 
     stopwords = (['AT_USER', 'https', 'RT', 'de', 'la', 'con', 'por', 'en', 'una', 'que', 'q', 'y', 'el', 'lo', 'se',
                   'a', 'un', 't', 'co', 'así', 'què', 'mes', 'més', 'perque', 'són', 'fet',
-                  'lis', ] + stop_words_sp + stopw_sp + stop_words_en + stopw_ca + stop_words_ca + stop_words_spa)
+                  'lis','<','>','=', word] + stop_words_sp + stopw_sp + stop_words_en + stop_words_ca + stop_words_spa)
 
     if type == 'tw':
         if type_req_tw != 'user':
-            my_mask = 'fas fa-cloud'
-            all_headlines_tw = ' '.join(texts['Tweet'].str.lower())
-            stylecloud.gen_stylecloud(all_headlines_tw, icon_name=my_mask,
-                                      output_name=r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\wordcloud.jpg',
-                                      custom_stopwords=stopwords,
-                                      collocations=False,
-                                      max_words=1000)
+            plt.figure(figsize=(50, 40))
+            mask = np.array(Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\mask.png'))
+
+            neg_headlines_tw = texts['Tweet'][texts['Rate'] < -0.5]
+            filter_neg_headlines_tw = texts['Tweet'][texts['Rate'] < -0.5].index
+            texts = texts.drop(filter_neg_headlines_tw)
+
+            pos_headlines_tw = texts['Tweet'][texts['Rate'] > 0.5]
+            filtre_pos_headlines_tw = texts['Tweet'][texts['Rate'] > 0.5].index
+            texts = texts.drop(filtre_pos_headlines_tw)
+
+            neu_headlines_tw = texts['Tweet']
+
+
+            neg_headlines_tw = ' '.join(neg_headlines_tw.str.lower())
+            pos_headlines_tw = ' '.join(pos_headlines_tw.str.lower())
+            neu_headlines_tw = ' '.join(neu_headlines_tw.str.lower())
+
+            # NEGATIVE WC
+            wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=100,
+                                  color_func=neg_color_func, width=600, height=403, contour_color='black',
+                                  mask=mask).generate(neg_headlines_tw)
+            plt.imshow(wordcloud)
+            plt.axis("off")
+            plt.tight_layout(pad=0)
+            plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\neg_wordcloud.jpg',bbox_inches='tight')
+
+            # POSITIVE WC
+            wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=100,
+                                  color_func=pos_color_func, width=600, height=403, contour_color='black',
+                                  mask=mask).generate(pos_headlines_tw)
+            plt.imshow(wordcloud)
+            plt.axis("off")
+            plt.tight_layout(pad=0)
+            plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\pos_wordcloud.jpg',bbox_inches='tight')
+
+            # NEUTRAL WC
+            wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=100,
+                                  color_func=neu_color_func, width=600, height=403, contour_color='black',
+                                  mask=mask).generate(neu_headlines_tw)
+            plt.imshow(wordcloud)
+            plt.axis("off")
+            plt.tight_layout(pad=0)
+            plt.savefig(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\neu_wordcloud.jpg',bbox_inches='tight')
+
+            # CONCATENATE IMAGES
+            im1 = cv2.imread(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\neg_wordcloud.jpg')
+            im2 = cv2.imread(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\neu_wordcloud.jpg')
+            im3 = cv2.imread(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\pos_wordcloud.jpg')
+
+            imh_h=cv2.hconcat([im1,im2,im3],None)
+            cv2.imwrite(r'D:\UAB\Uni\TFG\def_TFG\static\images\tw_images\wordcloud.jpg',imh_h)
+
+
+
         else:
             texts.sort_values('Date')
             plt.figure()
@@ -85,7 +161,6 @@ def wordcloud_texts(texts, type, type_req_tw):
             id = index_texts['Id'][index]
             filter_comments = texts['Comments'][texts['Id'] == id]
             filter_comments = filter_comments[:-1]
-
             all_headlines_fb = ' '.join(filter_comments.str.lower())
 
             # SI no hay suficientes comentarios mostramos NOT ENOUGH DATA
@@ -104,10 +179,6 @@ def wordcloud_texts(texts, type, type_req_tw):
                                           collocations=False,
                                           max_words=1000
                                           )
-
-    # wordcloud = WordCloud(stopwords=stopwords, mask=my_mask, contour_width=3,
-    # contour_color='black', background_color="white", max_words=words).generate(all_headlines)
-    # wordcloud.to_file(r'D:\UAB\Uni\TFG\def_TFG\static\images\wordcloud.jpg')
 
 
 def circular_graphic(texts, type):
@@ -259,15 +330,17 @@ def predict():
 
             texts = texts.drop(['Comments', 'Comments label', 'Comments rate', 'Neg_com', 'Neu_com', 'Pos_com'], axis=1)
             excel(texts)
-            wordcloud_texts(texts, 'tw', type_req)
+            wordcloud_texts(texts, 'tw', type_req, input_text)
             circular_graphic(texts, 'tw')
 
             if 'PDF' in request.form:
-                template = 'child/table.html'
+                template = 'child/table_tw.html'
+                pdf = 'PDF'
             else:
-                template = 'child/cards.html'
+                template = 'child/cards_tw.html'
+                pdf = ''
 
-            return render_template(template, prediction_text=prediction['data'], type=type_req)
+            return render_template(template, prediction_text=prediction['data'], type=type_req, pdf=pdf)
 
 
         elif 'facebook' in request.form:
@@ -278,7 +351,7 @@ def predict():
 
             prediction, texts = tf.main(input_text, input_number)
             excel(texts)
-            wordcloud_texts(texts, 'fb', None)
+            wordcloud_texts(texts, 'fb', None, input_text)
             circular_graphic(texts, 'fb')
 
             return render_template('/predict_fb.html', prediction_text=prediction['data'])

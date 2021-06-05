@@ -15,6 +15,7 @@
             crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
 
+
     <!-- Add icon library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
@@ -72,63 +73,119 @@
     {%block cards%}
 
     {% endblock %}
+</div>
 
-    <div class="predict row mt-5">
-        <div class="col-6">
-            <div class="card">
-                <div class="dashboards">
-                    <img src="/static/images/tw_images/circular_graph.svg" class="graph card-img-top">
-                    <div class="card-body">
-                        <p class="card-text">Porcentage de polaridad sobre el conjunto de posts</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6">
-            <div class="card">
-                {% if type == "user" %}
-                <div class="wordcloud">
-                    <img src="/static/images/tw_images/wordcloud.jpg" class="card-img-top">
-                </div>
-                {% else %}
-                <div class="wordcloud">
-                    <img src="/static/images/tw_images/wordcloud.jpg" class="wordc card-img-top">
-                </div>
-                {% endif %}
+
+{% if type == "user" %}
+<div class=" predict row mt-5">
+    <div class="graph_user_pie col-4">
+        <div class="card">
+            <div class="dashboards">
+                <img src="/static/images/tw_images/circular_graph.svg" class="graph card-img-top">
                 <div class="card-body">
-                    <p class="card-text">Palabras más incluidas en el conjunto de tweets</p>
+                    <p class="card-text">Porcentage de polaridad sobre el conjunto de posts</p>
                 </div>
             </div>
         </div>
-        <div id="editor"></div>
-        <div class="col-6 mt-5">
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
-                        class="fa fa-download"></i>
-                    Descargar
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                    <button id="download" class="dropdown-item"> Descargar PDF
-                    </button>
-                    <a href="{{ url_for('.downloadFile') }}">
-                        <button class="dropdown-item"> Descargar informe</button>
-                    </a>
+    </div>
+    <div class="graph_user_hist col-4">
+        <div class="card">
+            <div class="wordcloud">
+                <img src="/static/images/tw_images/wordcloud.jpg" class="card-img-top ">
+                <div class="card-body">
+                    <p class="card-text">Histograma de posts recientes</p>
                 </div>
             </div>
         </div>
-        <div class="col-2 mt-5">
-            <input class="form-check-input" type="checkbox" value="" id="hideTable">
-            <label class="form-check-label" for="hideTable">
-                Mostrar tabla
-            </label>
+    </div>
+
+</div>
+{% if pdf == "PDF" %}
+<div class="dropdown mt-5" style="margin-left: 321px">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+            class="fa fa-download"></i>
+        Descargar
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <button id="download" class="dropdown-item"> Descargar PDF
+        </button>
+
+        <a href="{{ url_for('.downloadFile') }}">
+            <button class="dropdown-item"> Descargar informe</button>
+        </a>
+    </div>
+</div>
+{% else %}
+<div class="dropdown mt-5" style="margin-left: 321px">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+            class="fa fa-download"></i>
+        Descargar
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <a href="{{ url_for('.downloadFile') }}">
+            <button class="dropdown-item"> Descargar informe</button>
+        </a>
+    </div>
+</div>
+{% endif %}
+{% else %}
+<div class="predict_graph row mt-5">
+    <div class="graph_user_pie col-4">
+        <div class="card">
+            <div class="dashboards">
+                <img src="/static/images/tw_images/circular_graph.svg" class="graph card-img-top ">
+                <div class="card-body">
+                    <p class="card-text">Porcentage de polaridad sobre el conjunto de posts</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="graph_user_wc col-4">
+        <div class="card">
+            <div class="wordcloud_tw">
+                <img src="/static/images/tw_images/wordcloud.jpg" class="card-img-top ">
+            </div>
+            <div class="card-body">
+                <p class="card-text">Palabras más incluidas</p>
+            </div>
         </div>
     </div>
 </div>
+{% if pdf == "PDF" %}
+<div class="dropdown mt-5" style="margin-left: 331px">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+            class="fa fa-download"></i>
+        Descargar
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <button id="download" class="dropdown-item"> Descargar PDF
+        </button>
 
+        <a href="{{ url_for('.downloadFile') }}">
+            <button class="dropdown-item"> Descargar informe</button>
+        </a>
+    </div>
+</div>
+{% else %}
+<div class="dropdown mt-5" style="margin-left: 331px">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+            class="fa fa-download"></i>
+        Descargar
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <a href="{{ url_for('.downloadFile') }}">
+            <button class="dropdown-item"> Descargar informe</button>
+        </a>
+    </div>
+</div>
+{% endif %}
 
-</div>
-</div>
+{% endif %}
+
 
 <footer class="footer">
     <div class="wrapper">

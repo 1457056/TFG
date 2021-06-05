@@ -11,16 +11,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 margin: 1,
                 filename: 'resultados.pdf',
                 image: {
-                    type: 'jpeg',
-                    quality: 0.98
+                    type: 'png',
+                    quality: 1
                 },
                 html2canvas: {
-                    scale: 3, // A mayor escala, mejores gráficos, pero más peso
+                    scale: 4, // A mayor escala, mejores gráficos, pero más peso
                     letterRendering: true,
                 },
                 jsPDF: {
                     unit: "in",
-                    format: "a3",
+                    format: "a1",
                     orientation: 'portrait' // landscape o portrait
                 }
             })
@@ -81,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     changeColor();
-
 
 });
 
