@@ -81,7 +81,9 @@ def wordcloud_texts(texts, type, type_req_tw, word):
     if type == 'tw':
         if type_req_tw != 'user':
             plt.figure(figsize=(50, 40))
-            mask = np.array(Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\mask.png'))
+            mask_neg = np.array(Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\mask_neg.png'))
+            mask_neu = np.array(Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\mask_neu.png'))
+            mask_pos = np.array(Image.open(r'D:\UAB\Uni\TFG\def_TFG\static\images\mask_pos.png'))
 
             neg_headlines_tw = texts['Tweet'][texts['Rate'] < -0.5]
             filter_neg_headlines_tw = texts['Tweet'][texts['Rate'] < -0.5].index
@@ -101,7 +103,7 @@ def wordcloud_texts(texts, type, type_req_tw, word):
             # NEGATIVE WC
             wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=100,
                                   color_func=neg_color_func, width=600, height=403, contour_color='black',
-                                  mask=mask).generate(neg_headlines_tw)
+                                  mask=mask_neg).generate(neg_headlines_tw)
             plt.imshow(wordcloud)
             plt.axis("off")
             plt.tight_layout(pad=0)
@@ -110,7 +112,7 @@ def wordcloud_texts(texts, type, type_req_tw, word):
             # POSITIVE WC
             wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=100,
                                   color_func=pos_color_func, width=600, height=403, contour_color='black',
-                                  mask=mask).generate(pos_headlines_tw)
+                                  mask=mask_pos).generate(pos_headlines_tw)
             plt.imshow(wordcloud)
             plt.axis("off")
             plt.tight_layout(pad=0)
@@ -119,7 +121,7 @@ def wordcloud_texts(texts, type, type_req_tw, word):
             # NEUTRAL WC
             wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=100,
                                   color_func=neu_color_func, width=600, height=403, contour_color='black',
-                                  mask=mask).generate(neu_headlines_tw)
+                                  mask=mask_neu).generate(neu_headlines_tw)
             plt.imshow(wordcloud)
             plt.axis("off")
             plt.tight_layout(pad=0)
