@@ -69,7 +69,7 @@ def buildTestSet(search_keyword, num, start_date, end_date):
             else:
                 type_req = 'word'
                 tweets_fetched = tw.Cursor(api.search, search_keyword + '-filter:retweets', since=start_date, lang='es',
-                                           until=end_date, since_id=since_id, include_rts=False).items(new_num)
+                                           until=end_date, since_id=since_id, include_rts=False, result_type='mixed').items(new_num)
                 for status in tweets_fetched:
                     test_data.append(
                         {"text": status.text, "label": None, 'id': status.id, "date": str(status.created_at),'likes':status.favorite_count})
@@ -106,7 +106,7 @@ def df_to_json(df_tweets):
     return result
 
 
-def main(search_term, num, start, end, comments):
+def main(search_term, num, start, end):
     testDataSet, type_req,replies = buildTestSet(search_term, num, start, end)
 
     #with open('Training results/dataset_tw.pkl', 'wb') as fp:

@@ -30,13 +30,13 @@ data_classified_comments = pd.DataFrame(columns=['label'])
 
 
 def main(search_term, num):
-    testDataSet = buldTestSet(search_term, num)
+    #testDataSet = buldTestSet(search_term, num)
     #with open('Training results/dataset.pkl', 'wb') as fp:
-    #    cPickle.dump((testDataSet), fp, -1)
+        #cPickle.dump((testDataSet), fp, -1)
 
 
-    #with open('Training results/dataset.pkl', 'rb') as f:
-     #   testDataSet = pickle.load(f)
+    with open('Training results/dataset.pkl', 'rb') as f:
+         testDataSet = pickle.load(f)
 
 
     result_df = pot.build_result_df(testDataSet, data_classified, data_classified_comments,'fb')

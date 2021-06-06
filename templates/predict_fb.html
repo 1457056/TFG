@@ -75,7 +75,7 @@
                                 allowfullscreen="true"
                                 type="application/pdf"
                                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                        id="iframe"></iframe>
+                                id="iframe"></iframe>
                     </center>
 
                     <table class="table table-hover" id="taula_resultats">
@@ -113,51 +113,45 @@
             {% endfor %}
         </div>
     </div>
-    <div class="predict row mt-5">
-        <div class="col-6">
-            <div class="card">
-                <div class="dashboards">
-                    <img id="image_graph" src="static/images/fb_images/graphics/circular_graph0.jpg"
-                         class=" graph card-img-top">
-                    <div class="card-body">
-                        <p class="card-text">Porcentage de polaridad sobre el conjunto de posts</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6">
-            <div class="card">
-                <div class="wordcloud">
-                    <img id="image_wordcloud" src="static/images/fb_images/wordclouds/wordcloud0.jpg"
-                         class="wordc card-img-top">
-                </div>
+</div>
+<div class="predict row mt-5">
+    <div class="graph_user_pie col-4">
+        <div class="card">
+            <div class="dashboards">
+                <img id= "image_graph" src="static/images/fb_images/graphics/circular_graph0.png"
+                     class=" graph card-img-top">
                 <div class="card-body">
-                    <p class="card-text">Palabras más incluidas en el conjunto de posts</p>
+                    <p class="card-text">Porcentage de polaridad sobre el conjunto de posts</p>
                 </div>
             </div>
         </div>
     </div>
-    <div class="predict row mt-5">
-        <div class="col-6 mt-5">
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
-                        class="fa fa-download"></i>
-                    Descargar
-                </button>
-                <div class="dropdown-menu mb-5" aria-labelledby="dropdownMenu2">
-                    <a href="{{ url_for('.downloadFile') }}">
-                        <button class="dropdown-item"> Descargar informe</button>
-                    </a>
-                </div>
+    <div class="graph_user_wc col-4">
+        <div class="card">
+            <div class="wordcloud_tw">
+                <img id = "image_wordcloud" src="static/images/fb_images/wordclouds/wordcloud0.jpg"
+                     class="card-img-top ">
+            </div>
+            <div class="card-body">
+                <p class="card-text">Palabras más incluidas</p>
             </div>
         </div>
     </div>
 </div>
 
+<div class="dropdown mt-5" style="margin-left: 331px">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+            class="fa fa-download"></i>
+        Descargar
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <a href="{{ url_for('.downloadFile') }}">
+            <button class="dropdown-item"> Descargar informe</button>
+        </a>
+    </div>
+</div>
 
-</div>
-</div>
 
 
 <footer class="footer">
